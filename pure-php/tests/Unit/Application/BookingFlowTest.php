@@ -15,7 +15,7 @@ final class BookingFlowTest extends TestCase
 {
     public function testListBookableShowsOnlyDoctorsWithOpenSlots(): void
     {
-        $doctors = new InMemoryDoctorAdapter();
+        $doctors    = new InMemoryDoctorAdapter();
         $scheduling = new InMemorySchedulingAdapter();
 
         (new CreateDoctor($doctors))->execute('dr-a', 'Dr Alpha');
@@ -26,7 +26,7 @@ final class BookingFlowTest extends TestCase
         (new SetPractitionerAvailability($scheduling, $doctors))->execute('dr-b', 0);
         (new SetPractitionerAvailability($scheduling, $doctors))->execute('dr-c', 1);
 
-        $list = (new ListBookableAppointments($doctors, $scheduling))->execute();
+        $list       = (new ListBookableAppointments($doctors, $scheduling))->execute();
 
         $this->assertCount(2, $list);
         $this->assertSame([

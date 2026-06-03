@@ -12,9 +12,9 @@ final class AuditHttp
     /** @param array<string, mixed> $extra */
     public static function merge(Request $request, array $extra = []): AuditRequestContext
     {
-        $data = $request->request->all();
+        $data      = $request->request->all();
 
-        $actorId = (string) (
+        $actorId   = (string) (
             $extra['actor_id']
             ?? $extra['practitioner_id']
             ?? $extra['doctor_id']
@@ -36,11 +36,11 @@ final class AuditHttp
             : (isset($data['patient_id']) && $data['patient_id'] !== '' ? (string) $data['patient_id'] : null);
 
         return new AuditRequestContext(
-            actorId: $actorId,
+            actorId  : $actorId,
             actorRole: $actorRole,
             patientId: $patientId,
             ipAddress: $request->getClientIp() ?? 'unknown',
-            deviceId: (string) ($request->headers->get('X-Device-Id') ?? $request->headers->get('User-Agent') ?? 'unknown'),
+            deviceId : (string) ($request->headers->get('X-Device-Id') ?? $request->headers->get('User-Agent') ?? 'unknown'),
         );
     }
 }

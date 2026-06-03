@@ -14,7 +14,8 @@ final class AuditLogController
     public function __construct(
         private readonly HttpActionRunner $httpActionRunner,
         private readonly ListAuditLogs $listAuditLogs,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request): JsonResponse
     {

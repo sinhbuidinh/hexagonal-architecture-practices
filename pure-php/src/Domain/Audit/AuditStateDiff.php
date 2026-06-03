@@ -25,12 +25,12 @@ final class AuditStateDiff
         }
 
         $lines = [];
-        $keys = array_unique([...array_keys($before), ...array_keys($after)]);
+        $keys  = array_unique([...array_keys($before), ...array_keys($after)]);
         sort($keys);
 
         foreach ($keys as $key) {
-            $old = $before[$key] ?? null;
-            $new = $after[$key] ?? null;
+            $old     = $before[$key] ?? null;
+            $new     = $after[$key] ?? null;
             if ($old === $new) {
                 continue;
             }

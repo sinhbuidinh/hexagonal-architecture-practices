@@ -42,7 +42,7 @@ final class AppointmentController
     #[Route('/availability', name: 'availability_set', methods: ['POST'])]
     public function setAvailability(Request $request): JsonResponse
     {
-        $data = $request->toArray();
+        $data  = $request->toArray();
         $audit = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
 
         return $this->httpActionRunner->run(
@@ -66,7 +66,7 @@ final class AppointmentController
     #[Route('/appointments', name: 'appointment_hold', methods: ['POST'])]
     public function hold(Request $request): JsonResponse
     {
-        $data = $request->toArray();
+        $data  = $request->toArray();
         $audit = AuditHttp::merge($request, ['actor_role' => 'Patient']);
 
         return $this->httpActionRunner->run(
@@ -124,7 +124,7 @@ final class AppointmentController
     #[Route('/expiration/process', name: 'expiration_process', methods: ['POST'])]
     public function processExpiration(Request $request): JsonResponse
     {
-        $data = $request->toArray();
+        $data  = $request->toArray();
         $limit = (int) ($data['limit'] ?? 100);
         $audit = AuditHttp::merge($request, ['actor_id' => 'system_expiration', 'actor_role' => 'System']);
 

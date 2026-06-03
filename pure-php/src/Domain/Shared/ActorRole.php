@@ -6,7 +6,7 @@ namespace HexagonPractise\Domain\Shared;
 
 enum ActorRole: string
 {
-    case Doctor = 'doctor';
+    case Doctor     = 'doctor';
     case Pharmacist = 'pharmacist';
 
     public static function fromString(string $value): self

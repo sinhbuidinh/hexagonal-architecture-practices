@@ -26,33 +26,33 @@ final class AuditLogTest extends TestCase
 {
     public function testMetadataFieldsArePersisted(): void
     {
-        $auditLog = new InMemoryAuditLogAdapter();
-        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-03T09:48:42.123Z'));
+        $auditLog   = new InMemoryAuditLogAdapter();
+        $clock      = new FrozenClock(new \DateTimeImmutable('2026-06-03T09:48:42.123Z'));
         $dispatcher = new SyncEventDispatcher(
             [new DoctorNotFoundExceptionListener()],
             [new RecordAuditLogListener($auditLog)],
         );
 
-        $request = new AuditRequestContext(
-            actorId: 'user_dr_smith_882',
+        $request    = new AuditRequestContext(
+            actorId  : 'user_dr_smith_882',
             actorRole: 'Physician',
             patientId: 'pat_99513',
             ipAddress: '192.168.1.45',
-            deviceId: 'iPad_Clinic_04',
+            deviceId : 'iPad_Clinic_04',
         );
 
-        $builder = new AuditRecordBuilder();
+        $builder    = new AuditRecordBuilder();
         $dispatcher->dispatch($builder->buildAuditedEvent(
-            action: AuditActions::APPOINTMENT_CANCEL,
-            outcome: AuditOutcome::Success,
-            request: $request,
-            occurredAt: $clock->now(),
+            action     : AuditActions::APPOINTMENT_CANCEL,
+            outcome    : AuditOutcome::Success,
+            request    : $request,
+            occurredAt : $clock->now(),
             beforeState: ['status' => 'scheduled'],
-            afterState: ['status' => 'cancelled'],
+            afterState : ['status' => 'cancelled'],
         ));
 
-        $entry = $auditLog->listRecent(1)[0];
-        $row = $entry->toArray();
+        $entry      = $auditLog->listRecent(1)[0];
+        $row        = $entry->toArray();
 
         $this->assertSame('2026-06-03T09:48:42.123Z', $row['timestamp']);
         $this->assertSame('user_dr_smith_882', $row['actor_id']);
@@ -67,10 +67,10 @@ final class AuditLogTest extends TestCase
 
     public function testFailureAuditIncludesHttpStatus(): void
     {
-        $auditLog = new InMemoryAuditLogAdapter();
-        $doctors = new InMemoryDoctorAdapter();
+        $auditLog   = new InMemoryAuditLogAdapter();
+        $doctors    = new InMemoryDoctorAdapter();
         $scheduling = new InMemorySchedulingAdapter();
-        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-03T12:00:00Z'));
+        $clock      = new FrozenClock(new \DateTimeImmutable('2026-06-03T12:00:00Z'));
 
         $dispatcher = new SyncEventDispatcher(
             [new DoctorNotFoundExceptionListener()],
@@ -79,14 +79,14 @@ final class AuditLogTest extends TestCase
 
         (new CreateDoctor($doctors))->execute('dr-1', 'Dr One');
 
-        $handler = new DomainExceptionHandler($dispatcher, $clock);
+        $handler    = new DomainExceptionHandler($dispatcher, $clock);
         $handler->handle(
             new DoctorNotFoundException(new PractitionerId('missing')),
             AuditActions::AVAILABILITY_SET,
             new AuditRequestContext('reception_1', 'Receptionist', null, '10.0.0.8', 'desktop'),
         );
 
-        $row = $auditLog->listRecent(1)[0]->toArray();
+        $row        = $auditLog->listRecent(1)[0]->toArray();
         $this->assertSame('failure', $row['outcome']);
         $this->assertSame(404, $row['http_status']);
         $this->assertSame('reception_1', $row['actor_id']);

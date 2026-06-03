@@ -25,14 +25,15 @@ final readonly class CreatePrescription
         string $instructions = '',
     ): array {
         $prescription = new Prescription(
-            new PrescriptionId($prescriptionId),
-            new PatientId($patientId),
-            $medication,
-            $dosage,
-            $instructions,
-            PrescriptionStatus::Draft,
-            '',
-            1,
+            id           : new PrescriptionId($prescriptionId),
+            patientId    : new PatientId($patientId),
+            medication   : $medication,
+            dosage       : $dosage,
+            instructions : $instructions,
+            status       : PrescriptionStatus::Draft,
+            pharmacyNotes: '',
+            version      : 1,
+            lastUpdatedBy: null,
         );
 
         $this->prescriptions->save($prescription);

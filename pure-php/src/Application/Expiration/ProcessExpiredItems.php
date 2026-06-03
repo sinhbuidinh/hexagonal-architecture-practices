@@ -23,7 +23,7 @@ final readonly class ProcessExpiredItems
     public function execute(int $limit = 100): array
     {
         $processed = [];
-        $items = $this->expirationQueue->pollDue($this->clock->now(), $limit);
+        $items     = $this->expirationQueue->pollDue($this->clock->now(), $limit);
 
         foreach ($items as $item) {
             if (($item->payload['type'] ?? '') === 'appointment_hold') {

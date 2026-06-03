@@ -24,7 +24,8 @@ final class AppointmentController
         private readonly CancelAppointmentHold $cancelAppointmentHold,
         private readonly ConfirmAppointment $confirmAppointment,
         private readonly ProcessExpiredItems $processExpiredItems,
-    ) {}
+    ) {
+    }
 
     public function listBookable(Request $request): JsonResponse
     {
@@ -37,7 +38,7 @@ final class AppointmentController
 
     public function setAvailability(Request $request): JsonResponse
     {
-        $audit = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
+        $audit   = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
 
         $payload = $this->httpActionRunner->run(
             function () use ($request): array {
@@ -52,7 +53,7 @@ final class AppointmentController
             $audit,
             beforeState: [
                 'practitioner_id' => (string) $request->input('practitioner_id', ''),
-                'slots' => null,
+                'slots'           => null,
             ],
         );
 
@@ -61,7 +62,7 @@ final class AppointmentController
 
     public function hold(Request $request): JsonResponse
     {
-        $audit = AuditHttp::merge($request, ['actor_role' => 'Patient']);
+        $audit   = AuditHttp::merge($request, ['actor_role' => 'Patient']);
 
         $payload = $this->httpActionRunner->run(
             function () use ($request): array {
@@ -77,7 +78,7 @@ final class AppointmentController
             },
             AuditActions::APPOINTMENT_HOLD,
             $audit,
-            beforeState: ['status' => 'available'],
+            beforeState  : ['status' => 'available'],
             successStatus: 201,
         );
 
@@ -86,7 +87,7 @@ final class AppointmentController
 
     public function cancel(Request $request, string $appointmentId): JsonResponse
     {
-        $audit = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
+        $audit   = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
 
         $payload = $this->httpActionRunner->run(
             function () use ($appointmentId): array {
@@ -104,7 +105,7 @@ final class AppointmentController
 
     public function confirm(Request $request, string $appointmentId): JsonResponse
     {
-        $audit = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
+        $audit   = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
 
         $payload = $this->httpActionRunner->run(
             function () use ($appointmentId): array {
@@ -122,9 +123,9 @@ final class AppointmentController
 
     public function processExpiration(Request $request): JsonResponse
     {
-        $limit = (int) $request->input('limit', 100);
-        $audit = AuditHttp::merge($request, [
-            'actor_id' => 'system_expiration',
+        $limit   = (int) $request->input('limit', 100);
+        $audit   = AuditHttp::merge($request, [
+            'actor_id'   => 'system_expiration',
             'actor_role' => 'System',
         ]);
 

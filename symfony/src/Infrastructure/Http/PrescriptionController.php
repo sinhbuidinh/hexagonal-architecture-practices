@@ -31,7 +31,7 @@ final class PrescriptionController
 
         return $this->httpActionRunner->run(
             function () use ($request): JsonResponse {
-                $data = $request->toArray();
+                $data   = $request->toArray();
                 $result = $this->createPrescription->execute(
                     (string) ($data['prescription_id'] ?? bin2hex(random_bytes(8))),
                     (string) ($data['patient_id'] ?? ''),
@@ -52,7 +52,7 @@ final class PrescriptionController
     {
         $audit = AuditHttp::merge($request, ['actor_role' => 'Physician']);
         try {
-            $rx = $this->getPrescription->execute($prescriptionId);
+            $rx    = $this->getPrescription->execute($prescriptionId);
             $audit = $audit->withPatientId((string) ($rx['patient_id'] ?? null));
         } catch (PrescriptionNotFoundException) {
         }
@@ -67,14 +67,14 @@ final class PrescriptionController
     #[Route('/prescriptions/{prescriptionId}', name: 'prescription_update', methods: ['PUT'])]
     public function update(Request $request, string $prescriptionId): JsonResponse
     {
-        $data = $request->toArray();
-        $actorRole = (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician');
-        $audit = AuditHttp::merge($request, ['actor_role' => $actorRole]);
+        $data        = $request->toArray();
+        $actorRole   = (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician');
+        $audit       = AuditHttp::merge($request, ['actor_role' => $actorRole]);
 
         $beforeState = null;
         try {
             $beforeState = $this->getPrescription->execute($prescriptionId);
-            $audit = $audit->withPatientId((string) ($beforeState['patient_id'] ?? null));
+            $audit       = $audit->withPatientId((string) ($beforeState['patient_id'] ?? null));
         } catch (PrescriptionNotFoundException) {
         }
 

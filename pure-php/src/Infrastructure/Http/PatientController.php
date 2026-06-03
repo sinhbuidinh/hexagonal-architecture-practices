@@ -19,9 +19,9 @@ final class PatientController
             return ['status' => 404, 'error' => 'Not found'];
         }
 
-        $data = $this->decode($body);
+        $data      = $this->decode($body);
         $patientId = (string) ($data['patient_id'] ?? bin2hex(random_bytes(8)));
-        $audit = AuditHttp::contextFrom($data)
+        $audit     = AuditHttp::contextFrom($data)
             ->withPatientId($patientId)
             ->withActor($patientId, 'Patient');
 
@@ -36,7 +36,7 @@ final class PatientController
             },
             AuditActions::PATIENT_CREATE,
             $audit,
-            beforeState: null,
+            beforeState  : null,
             successStatus: 201,
         );
     }

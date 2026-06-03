@@ -14,17 +14,18 @@ final class DoctorController
     public function __construct(
         private readonly HttpActionRunner $httpActionRunner,
         private readonly CreateDoctor $createDoctor,
-    ) {}
+    ) {
+    }
 
     public function create(Request $request): JsonResponse
     {
         $doctorId = (string) $request->input('doctor_id', bin2hex(random_bytes(8)));
-        $audit = AuditHttp::merge($request, [
-            'doctor_id' => $doctorId,
+        $audit    = AuditHttp::merge($request, [
+            'doctor_id'  => $doctorId,
             'actor_role' => 'Physician',
         ]);
 
-        $payload = $this->httpActionRunner->run(
+        $payload  = $this->httpActionRunner->run(
             function () use ($request, $doctorId): array {
                 $data = $this->createDoctor->execute(
                     $doctorId,

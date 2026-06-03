@@ -41,33 +41,33 @@ final readonly class UpdatePrescription
         string $actorRole,
         array $changes,
     ): array {
-        $actor = ActorRole::fromString($actorRole);
+        $actor   = ActorRole::fromString($actorRole);
         $current = $this->load($prescriptionId);
 
         $updated = new Prescription(
-            $current->id,
-            $current->patientId,
-            $this->resolveField($actor, 'medication', $changes, $current->medication),
-            $this->resolveField($actor, 'dosage', $changes, $current->dosage),
-            $this->resolveField($actor, 'instructions', $changes, $current->instructions),
-            isset($changes['status']) && $changes['status'] !== null
+            id           : $current->id,
+            patientId    : $current->patientId,
+            medication   : $this->resolveField($actor, 'medication', $changes, $current->medication),
+            dosage       : $this->resolveField($actor, 'dosage', $changes, $current->dosage),
+            instructions : $this->resolveField($actor, 'instructions', $changes, $current->instructions),
+            status       : isset($changes['status']) && $changes['status'] !== null
                 ? PrescriptionStatus::fromString((string) $changes['status'])
                 : $current->status,
-            $this->resolveField($actor, 'pharmacy_notes', $changes, $current->pharmacyNotes),
-            $current->version,
-            $actor,
+            pharmacyNotes: $this->resolveField($actor, 'pharmacy_notes', $changes, $current->pharmacyNotes),
+            version      : $current->version,
+            lastUpdatedBy: $actor,
         );
 
         $this->assertRoleRules($actor, $changes);
 
-        $saved = $this->prescriptions->updateIfVersionMatches($updated, $expectedVersion);
+        $saved   = $this->prescriptions->updateIfVersionMatches($updated, $expectedVersion);
 
         return $saved->toArray();
     }
 
     private function load(string $prescriptionId): Prescription
     {
-        $id = new PrescriptionId($prescriptionId);
+        $id           = new PrescriptionId($prescriptionId);
         $prescription = $this->prescriptionQueries->find($id);
         if ($prescription === null) {
             throw new PrescriptionNotFoundException($id);

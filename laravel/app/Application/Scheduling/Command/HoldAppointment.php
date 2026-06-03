@@ -42,24 +42,24 @@ final readonly class HoldAppointment
             throw new DoctorNotFoundException($practitioner);
         }
 
-        $patient = new PatientId($patientId);
+        $patient      = new PatientId($patientId);
         if ($this->patients->find($patient) === null) {
             throw new PatientNotFoundException($patient);
         }
 
-        $hold = new AppointmentHold(
-            new AppointmentId($appointmentId),
-            $practitioner,
-            $patient,
-            new SlotCount($slots),
-            $expiresAt,
+        $hold         = new AppointmentHold(
+            id            : new AppointmentId($appointmentId),
+            practitionerId: $practitioner,
+            patientId     : $patient,
+            slots         : new SlotCount($slots),
+            expiresAt     : $expiresAt,
         );
 
         $this->scheduling->hold($hold);
 
         $this->expirationQueue->schedule(new ExpiringItem(
-            id: 'appointment:' . $appointmentId,
-            payload: [
+            id       : 'appointment:' . $appointmentId,
+            payload  : [
                 'type'           => 'appointment_hold',
                 'appointment_id' => $appointmentId,
                 'expires_at'     => $expiresAt->format(\DateTimeInterface::ATOM),

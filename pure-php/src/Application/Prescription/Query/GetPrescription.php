@@ -23,7 +23,7 @@ final readonly class GetPrescription
 
     public function find(string $prescriptionId): Prescription
     {
-        $id = new PrescriptionId($prescriptionId);
+        $id           = new PrescriptionId($prescriptionId);
         $prescription = $this->prescriptions->find($id);
         if ($prescription === null) {
             throw new PrescriptionNotFoundException($id);

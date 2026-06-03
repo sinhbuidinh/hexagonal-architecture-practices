@@ -21,7 +21,7 @@ final readonly class AuditRequestContext
     /** @param array<string, mixed> $hints keys: actor_id, actor, actor_role, patient_id */
     public static function fromHttpHints(array $hints = []): self
     {
-        $actorId = (string) ($hints['actor_id']
+        $actorId   = (string) ($hints['actor_id']
             ?? $_SERVER['HTTP_X_ACTOR_ID']
             ?? $_SERVER['HTTP_X_USER_ID']
             ?? 'system');
@@ -34,22 +34,22 @@ final readonly class AuditRequestContext
             : null;
 
         return new self(
-            actorId: $actorId,
+            actorId  : $actorId,
             actorRole: $actorRole,
             patientId: $patientId,
             ipAddress: self::resolveClientIp(),
-            deviceId: (string) ($_SERVER['HTTP_X_DEVICE_ID'] ?? $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'),
+            deviceId : (string) ($_SERVER['HTTP_X_DEVICE_ID'] ?? $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'),
         );
     }
 
     public function withPatientId(?string $patientId): self
     {
         return new self(
-            $this->actorId,
-            $this->actorRole,
-            $patientId !== '' ? $patientId : null,
-            $this->ipAddress,
-            $this->deviceId,
+            actorId  : $this->actorId,
+            actorRole: $this->actorRole,
+            patientId: $patientId !== '' ? $patientId : null,
+            ipAddress: $this->ipAddress,
+            deviceId : $this->deviceId,
         );
     }
 

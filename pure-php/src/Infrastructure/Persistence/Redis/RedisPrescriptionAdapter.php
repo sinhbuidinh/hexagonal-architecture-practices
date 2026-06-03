@@ -76,22 +76,22 @@ final class RedisPrescriptionAdapter implements PrescriptionCommandPort, Prescri
             }
 
             throw new ConcurrentUpdateException(
-                $prescription->id,
-                $expectedVersion,
-                $currentVersion,
+                prescriptionId : $prescription->id,
+                expectedVersion: $expectedVersion,
+                currentVersion : $currentVersion,
             );
         }
 
         return new Prescription(
-            $prescription->id,
-            $prescription->patientId,
-            $prescription->medication,
-            $prescription->dosage,
-            $prescription->instructions,
-            $prescription->status,
-            $prescription->pharmacyNotes,
-            (int) $result[1],
-            $prescription->lastUpdatedBy,
+            id           : $prescription->id,
+            patientId    : $prescription->patientId,
+            medication   : $prescription->medication,
+            dosage       : $prescription->dosage,
+            instructions : $prescription->instructions,
+            status       : $prescription->status,
+            pharmacyNotes: $prescription->pharmacyNotes,
+            version      : (int) $result[1],
+            lastUpdatedBy: $prescription->lastUpdatedBy,
         );
     }
 
@@ -103,15 +103,15 @@ final class RedisPrescriptionAdapter implements PrescriptionCommandPort, Prescri
             : null;
 
         return new Prescription(
-            $id,
-            new PatientId($data['patient_id']),
-            $data['medication'] ?? '',
-            $data['dosage'] ?? '',
-            $data['instructions'] ?? '',
-            PrescriptionStatus::fromString($data['status'] ?? PrescriptionStatus::Draft->value),
-            $data['pharmacy_notes'] ?? '',
-            (int) ($data['version'] ?? 1),
-            $lastUpdatedBy,
+            id           : $id,
+            patientId    : new PatientId($data['patient_id']),
+            medication   : $data['medication'] ?? '',
+            dosage       : $data['dosage'] ?? '',
+            instructions : $data['instructions'] ?? '',
+            status       : PrescriptionStatus::fromString($data['status'] ?? PrescriptionStatus::Draft->value),
+            pharmacyNotes: $data['pharmacy_notes'] ?? '',
+            version      : (int) ($data['version'] ?? 1),
+            lastUpdatedBy: $lastUpdatedBy,
         );
     }
 

@@ -28,29 +28,29 @@ final class InMemoryPrescriptionAdapter implements PrescriptionCommandPort, Pres
 
     public function updateIfVersionMatches(Prescription $prescription, int $expectedVersion): Prescription
     {
-        $current = $this->find($prescription->id);
+        $current                               = $this->find($prescription->id);
         if ($current === null) {
             throw new PrescriptionNotFoundException($prescription->id);
         }
 
         if ($current->version !== $expectedVersion) {
             throw new ConcurrentUpdateException(
-                $prescription->id,
-                $expectedVersion,
-                $current->version,
+                prescriptionId : $prescription->id,
+                expectedVersion: $expectedVersion,
+                currentVersion : $current->version,
             );
         }
 
-        $saved = new Prescription(
-            $prescription->id,
-            $prescription->patientId,
-            $prescription->medication,
-            $prescription->dosage,
-            $prescription->instructions,
-            $prescription->status,
-            $prescription->pharmacyNotes,
-            $expectedVersion + 1,
-            $prescription->lastUpdatedBy,
+        $saved                                 = new Prescription(
+            id           : $prescription->id,
+            patientId    : $prescription->patientId,
+            medication   : $prescription->medication,
+            dosage       : $prescription->dosage,
+            instructions : $prescription->instructions,
+            status       : $prescription->status,
+            pharmacyNotes: $prescription->pharmacyNotes,
+            version      : $expectedVersion + 1,
+            lastUpdatedBy: $prescription->lastUpdatedBy,
         );
 
         $this->store[$prescription->id->value] = $saved;

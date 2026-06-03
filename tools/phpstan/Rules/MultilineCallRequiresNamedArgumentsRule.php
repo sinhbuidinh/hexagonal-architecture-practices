@@ -7,13 +7,12 @@ namespace HexagonPractise\Tools\PhpStan\Rules;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\CallLike;
-use PhpParser\Node\Expr\New_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
 /**
- * Multiline function/method calls must use named arguments for every parameter.
+ * Multiline function/method/new expressions must use named arguments for every parameter.
  *
  * @implements Rule<CallLike>
  */
@@ -31,10 +30,6 @@ final class MultilineCallRequiresNamedArgumentsRule implements Rule
      */
     public function processNode(Node $node, Scope $scope): array
     {
-        if ($node instanceof New_) {
-            return [];
-        }
-
         $args = $node->getArgs();
         if ($args === []) {
             return [];

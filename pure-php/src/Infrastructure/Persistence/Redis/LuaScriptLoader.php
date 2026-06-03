@@ -12,7 +12,7 @@ final class LuaScriptLoader
     public static function load(string $filename): string
     {
         if (!isset(self::$cache[$filename])) {
-            $path = __DIR__ . '/Lua/' . $filename;
+            $path                   = __DIR__ . '/Lua/' . $filename;
             if (!is_readable($path)) {
                 throw new \RuntimeException(sprintf('Lua script not found: %s', $path));
             }

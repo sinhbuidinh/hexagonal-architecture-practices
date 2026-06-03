@@ -17,7 +17,7 @@ final class NoSlotsAvailableExceptionListener implements ExceptionResponseListen
             return;
         }
 
-        $e = $event->exception;
+        $e               = $event->exception;
         $event->response = new HttpErrorResponse(409, [
             'error'           => $e->getMessage(),
             'available_slots' => $e->available->value,

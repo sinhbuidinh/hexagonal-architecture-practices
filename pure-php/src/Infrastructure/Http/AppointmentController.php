@@ -38,7 +38,7 @@ final class AppointmentController
     /** @return array<string, mixed> */
     private function setAvailability(HttpActionRunner $runner, string $body): array
     {
-        $data = $this->decode($body);
+        $data  = $this->decode($body);
         $audit = AuditHttp::contextFrom($data)->withActor(
             (string) ($data['actor_id'] ?? $data['practitioner_id'] ?? 'system'),
             (string) ($data['actor_role'] ?? 'Receptionist'),
@@ -62,7 +62,7 @@ final class AppointmentController
     /** @return array<string, mixed> */
     private function hold(HttpActionRunner $runner, string $body): array
     {
-        $data = $this->decode($body);
+        $data  = $this->decode($body);
         $audit = AuditHttp::contextFrom($data)->withActor(
             (string) ($data['actor_id'] ?? $data['patient_id'] ?? 'system'),
             (string) ($data['actor_role'] ?? 'Patient'),
@@ -82,7 +82,7 @@ final class AppointmentController
             },
             AuditActions::APPOINTMENT_HOLD,
             $audit,
-            beforeState: ['status' => 'available'],
+            beforeState  : ['status' => 'available'],
             successStatus: 201,
         );
     }
@@ -90,7 +90,7 @@ final class AppointmentController
     /** @return array<string, mixed> */
     private function cancel(HttpActionRunner $runner, string $appointmentId, string $body): array
     {
-        $data = $this->decode($body);
+        $data  = $this->decode($body);
         $audit = AuditHttp::contextFrom($data)->withActor(
             (string) ($data['actor_id'] ?? 'system'),
             (string) ($data['actor_role'] ?? 'Receptionist'),
@@ -111,7 +111,7 @@ final class AppointmentController
     /** @return array<string, mixed> */
     private function confirm(HttpActionRunner $runner, string $appointmentId, string $body): array
     {
-        $data = $this->decode($body);
+        $data  = $this->decode($body);
         $audit = AuditHttp::contextFrom($data)->withActor(
             (string) ($data['actor_id'] ?? 'system'),
             (string) ($data['actor_role'] ?? 'Receptionist'),
@@ -132,7 +132,7 @@ final class AppointmentController
     /** @return array<string, mixed> */
     private function processExpiration(HttpActionRunner $runner, string $body): array
     {
-        $data = $this->decode($body);
+        $data  = $this->decode($body);
         $limit = (int) ($data['limit'] ?? 100);
         $audit = AuditHttp::contextFrom($data)->withActor('system_expiration', 'System');
 

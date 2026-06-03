@@ -16,12 +16,12 @@ use Predis\Client;
 
 final class RedisSchedulingAdapterTest extends TestCase
 {
-    private ?Client $redis = null;
+    private ?Client $redis                   = null;
     private ?RedisSchedulingAdapter $adapter = null;
 
     protected function setUp(): void
     {
-        $dsn = getenv('REDIS_DSN') ?: 'redis://127.0.0.1:6379';
+        $dsn           = getenv('REDIS_DSN') ?: 'redis://127.0.0.1:6379';
         try {
             $this->redis = RedisClientFactory::fromDsn($dsn);
             $this->redis->ping();
@@ -35,7 +35,7 @@ final class RedisSchedulingAdapterTest extends TestCase
             'test:appointment:',
         );
 
-        $keys = $this->redis->keys('test:*');
+        $keys          = $this->redis->keys('test:*');
         if ($keys !== []) {
             $this->redis->del($keys);
         }
@@ -46,7 +46,7 @@ final class RedisSchedulingAdapterTest extends TestCase
         $practitioner = new PractitionerId('dr-' . bin2hex(random_bytes(4)));
         $this->adapter->setAvailability($practitioner, new SlotCount(5));
 
-        $hold = new AppointmentHold(
+        $hold         = new AppointmentHold(
             new AppointmentId('apt-' . bin2hex(random_bytes(4))),
             $practitioner,
             new PatientId('patient-1'),

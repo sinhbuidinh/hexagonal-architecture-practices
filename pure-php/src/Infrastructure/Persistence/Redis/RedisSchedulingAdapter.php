@@ -26,7 +26,7 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
         private readonly string $slotsKeyPrefix,
         private readonly string $appointmentKeyPrefix,
     ) {
-        $this->holdScript = LuaScriptLoader::load('hold_appointment.lua');
+        $this->holdScript    = LuaScriptLoader::load('hold_appointment.lua');
         $this->releaseScript = LuaScriptLoader::load('release_appointment.lua');
         $this->confirmScript = LuaScriptLoader::load('confirm_appointment.lua');
     }
@@ -59,9 +59,9 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
         if (!is_array($result) || (int) ($result[0] ?? 0) !== 1) {
             $available = new SlotCount((int) ($result[1] ?? 0));
             throw new NoSlotsAvailableException(
-                $hold->practitionerId,
-                $hold->slots,
-                $available,
+                practitionerId: $hold->practitionerId,
+                requested     : $hold->slots,
+                available     : $available,
             );
         }
     }
@@ -73,7 +73,7 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
             throw new AppointmentNotFoundException($appointmentId);
         }
 
-        $ok = $this->redis->eval(
+        $ok   = $this->redis->eval(
             $this->releaseScript,
             2,
             $this->slotsKey($hold->practitionerId),
@@ -106,11 +106,11 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
         }
 
         return new AppointmentHold(
-            $appointmentId,
-            new PractitionerId($data['practitioner_id']),
-            new PatientId($data['patient_id']),
-            new SlotCount((int) $data['slots']),
-            new \DateTimeImmutable($data['expires_at']),
+            id            : $appointmentId,
+            practitionerId: new PractitionerId($data['practitioner_id']),
+            patientId     : new PatientId($data['patient_id']),
+            slots         : new SlotCount((int) $data['slots']),
+            expiresAt     : new \DateTimeImmutable($data['expires_at']),
         );
     }
 

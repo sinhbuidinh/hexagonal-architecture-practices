@@ -19,9 +19,9 @@ final class DoctorController
             return ['status' => 404, 'error' => 'Not found'];
         }
 
-        $data = $this->decode($body);
+        $data     = $this->decode($body);
         $doctorId = (string) ($data['doctor_id'] ?? bin2hex(random_bytes(8)));
-        $audit = AuditHttp::contextFrom($data)->withActor($doctorId, 'Physician');
+        $audit    = AuditHttp::contextFrom($data)->withActor($doctorId, 'Physician');
 
         return $this->container->httpActionRunner->run(
             function () use ($doctorId, $data): array {
@@ -34,7 +34,7 @@ final class DoctorController
             },
             AuditActions::DOCTOR_CREATE,
             $audit,
-            beforeState: null,
+            beforeState  : null,
             successStatus: 201,
         );
     }

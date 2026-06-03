@@ -31,7 +31,7 @@ final class PrescriptionController
     /** @return array<string, mixed> */
     private function create(HttpActionRunner $runner, string $body): array
     {
-        $data = $this->decode($body);
+        $data  = $this->decode($body);
         $audit = AuditHttp::contextFrom($data)->withActor(
             (string) ($data['actor_id'] ?? $data['actor'] ?? 'system'),
             (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician'),
@@ -51,7 +51,7 @@ final class PrescriptionController
             },
             AuditActions::PRESCRIPTION_CREATE,
             $audit,
-            beforeState: null,
+            beforeState  : null,
             successStatus: 201,
         );
     }
@@ -59,7 +59,7 @@ final class PrescriptionController
     /** @return array<string, mixed> */
     private function get(HttpActionRunner $runner, string $prescriptionId, string $body): array
     {
-        $data = $this->decode($body);
+        $data  = $this->decode($body);
         $audit = AuditHttp::contextFrom($data)->withActor(
             (string) ($data['actor_id'] ?? $data['actor'] ?? 'system'),
             (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician'),
@@ -77,9 +77,9 @@ final class PrescriptionController
     /** @return array<string, mixed> */
     private function update(HttpActionRunner $runner, string $prescriptionId, string $body): array
     {
-        $data = $this->decode($body);
-        $actorRole = (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician');
-        $audit = AuditHttp::contextFrom($data)->withActor(
+        $data        = $this->decode($body);
+        $actorRole   = (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician');
+        $audit       = AuditHttp::contextFrom($data)->withActor(
             (string) ($data['actor_id'] ?? $data['actor'] ?? 'system'),
             $actorRole,
         );
@@ -87,7 +87,7 @@ final class PrescriptionController
         $beforeState = null;
         try {
             $beforeState = $this->container->getPrescription->execute($prescriptionId);
-            $audit = $audit->withPatientId((string) ($beforeState['patient_id'] ?? null));
+            $audit       = $audit->withPatientId((string) ($beforeState['patient_id'] ?? null));
         } catch (PrescriptionNotFoundException) {
             // logged as failure when use case throws
         }

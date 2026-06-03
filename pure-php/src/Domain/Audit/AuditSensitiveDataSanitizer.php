@@ -9,7 +9,7 @@ namespace HexagonPractise\Domain\Audit;
  */
 final class AuditSensitiveDataSanitizer
 {
-    private const REDACTED = '[REDACTED]';
+    private const REDACTED      = '[REDACTED]';
 
     /** @var list<string> */
     private const REDACTED_KEYS = [

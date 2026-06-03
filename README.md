@@ -137,7 +137,7 @@ Config: [`.php-cs-fixer.dist.php`](.php-cs-fixer.dist.php) (PSR-12; aligned `=>`
 
 ### Static analysis (named arguments on multiline calls)
 
-Custom PHPStan rule **`hexagon.multilineCallRequiresNamedArguments`**: if a function/method call spans multiple lines, every argument must be named (constructors excluded).
+Custom PHPStan rule **`hexagon.multilineCallRequiresNamedArguments`**: if a function/method/`new` call spans multiple lines, every argument must be named.
 
 ```bash
 composer phpstan              # pure-php + laravel + symfony

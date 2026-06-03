@@ -23,22 +23,22 @@ final class RecordAuditLogListener implements ActionAuditedListener
         $meta = $event->metadata;
 
         $this->auditLog->append(new AuditLogEntry(
-            id: bin2hex(random_bytes(8)),
-            action: $event->action,
-            outcome: $event->outcome,
-            occurredAt: $event->occurredAt,
-            actorId: $meta->actorId,
-            actorRole: $meta->actorRole,
-            patientId: $meta->patientId,
-            actionType: $meta->actionType,
-            ipAddress: $meta->ipAddress,
-            deviceId: $meta->deviceId,
-            beforeState: $meta->beforeState,
-            afterState: $meta->afterState,
-            stateDiff: $meta->stateDiff,
-            exceptionClass: $event->exceptionClass,
+            id              : bin2hex(random_bytes(8)),
+            action          : $event->action,
+            outcome         : $event->outcome,
+            occurredAt      : $event->occurredAt,
+            actorId         : $meta->actorId,
+            actorRole       : $meta->actorRole,
+            patientId       : $meta->patientId,
+            actionType      : $meta->actionType,
+            ipAddress       : $meta->ipAddress,
+            deviceId        : $meta->deviceId,
+            beforeState     : $meta->beforeState,
+            afterState      : $meta->afterState,
+            stateDiff       : $meta->stateDiff,
+            exceptionClass  : $event->exceptionClass,
             exceptionMessage: $event->exceptionMessage,
-            httpStatus: $event->httpStatus,
+            httpStatus      : $event->httpStatus,
         ));
     }
 }

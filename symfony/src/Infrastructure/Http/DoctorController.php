@@ -22,9 +22,9 @@ final class DoctorController
     #[Route('/doctors', name: 'doctor_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        $data = $request->toArray();
+        $data     = $request->toArray();
         $doctorId = (string) ($data['doctor_id'] ?? bin2hex(random_bytes(8)));
-        $audit = AuditHttp::merge($request, ['doctor_id' => $doctorId, 'actor_role' => 'Physician']);
+        $audit    = AuditHttp::merge($request, ['doctor_id' => $doctorId, 'actor_role' => 'Physician']);
 
         return $this->httpActionRunner->run(
             function () use ($data, $doctorId): JsonResponse {

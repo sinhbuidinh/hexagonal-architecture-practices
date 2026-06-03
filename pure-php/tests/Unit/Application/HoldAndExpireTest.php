@@ -30,10 +30,10 @@ final class HoldAndExpireTest extends TestCase
     protected function setUp(): void
     {
         $this->scheduling = new InMemorySchedulingAdapter();
-        $this->queue = new InMemoryExpirationQueueAdapter();
-        $this->doctors = new InMemoryDoctorAdapter();
-        $this->patients = new InMemoryPatientAdapter();
-        $this->clock = new FrozenClock(new \DateTimeImmutable('2026-06-03T10:00:00Z'));
+        $this->queue      = new InMemoryExpirationQueueAdapter();
+        $this->doctors    = new InMemoryDoctorAdapter();
+        $this->patients   = new InMemoryPatientAdapter();
+        $this->clock      = new FrozenClock(new \DateTimeImmutable('2026-06-03T10:00:00Z'));
 
         (new CreateDoctor($this->doctors))->execute('dr-smith', 'Dr Smith');
         (new CreatePatient($this->patients))->execute('patient-42', 'Jane Doe');
@@ -84,7 +84,7 @@ final class HoldAndExpireTest extends TestCase
 
         $this->clock->set($expiresAt->modify('+1 second'));
 
-        $cancel = new CancelAppointmentHold($this->scheduling, $this->queue);
+        $cancel    = new CancelAppointmentHold($this->scheduling, $this->queue);
         $processor = new ProcessExpiredItems($this->queue, $cancel, $this->clock);
         $processed = $processor->execute();
 

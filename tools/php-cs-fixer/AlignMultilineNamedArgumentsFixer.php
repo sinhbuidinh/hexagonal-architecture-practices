@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HexagonPractise\Tools\PhpCsFixer;
 
+use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\FixerDefinition\FixerDefinition;
 use PhpCsFixer\FixerDefinition\FixerDefinitionInterface;
 use PhpCsFixer\Tokenizer\CT;
@@ -13,12 +14,16 @@ use SplFileInfo;
 
 /**
  * Vertically aligns ":" in multiline named-argument lists (PHP 8+).
+ *
+ * Alignment is scoped per "(" list: nested calls align independently. Within one list,
+ * a multiline nested "(…)" argument ends the current group so outer names are not
+ * padded to match parameters after an embedded object/array call.
  */
 final class AlignMultilineNamedArgumentsFixer extends AbstractFixer
 {
     public function getDefinition(): FixerDefinitionInterface
     {
-        return new FixerDefinition('Align colons in multiline named argument lists.');
+        return new FixerDefinition('Align colons in multiline named argument lists.', []);
     }
 
     public function isCandidate(Tokens $tokens): bool
@@ -43,7 +48,9 @@ final class AlignMultilineNamedArgumentsFixer extends AbstractFixer
                 continue;
             }
 
-            $this->alignNamedArgumentColons($tokens, $colonIndices);
+            foreach ($this->groupColonIndices($tokens, $colonIndices) as $group) {
+                $this->alignNamedArgumentColons($tokens, $group);
+            }
         }
     }
 
@@ -59,6 +66,8 @@ final class AlignMultilineNamedArgumentsFixer extends AbstractFixer
     }
 
     /**
+     * Colons for arguments at this "(" level only — skip nested "(…)" blocks.
+     *
      * @return list<int>
      */
     private function collectNamedArgumentColons(Tokens $tokens, int $open, int $close): array
@@ -66,12 +75,66 @@ final class AlignMultilineNamedArgumentsFixer extends AbstractFixer
         $colonIndices = [];
 
         for ($i = $open + 1; $i < $close; ++$i) {
+            if ($tokens[$i]->equals('(')) {
+                $i = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $i);
+
+                continue;
+            }
+
             if ($tokens[$i]->isGivenKind(CT::T_NAMED_ARGUMENT_COLON)) {
                 $colonIndices[] = $i;
             }
         }
 
         return $colonIndices;
+    }
+
+    /**
+     * @param list<int> $colonIndices
+     *
+     * @return list<list<int>>
+     */
+    private function groupColonIndices(Tokens $tokens, array $colonIndices): array
+    {
+        if ($colonIndices === []) {
+            return [];
+        }
+
+        $groups = [[]];
+        $lastIndex = \count($colonIndices) - 1;
+
+        foreach ($colonIndices as $position => $colonIndex) {
+            $groups[\count($groups) - 1][] = $colonIndex;
+
+            if ($position === $lastIndex) {
+                break;
+            }
+
+            $nextColonIndex = $colonIndices[$position + 1];
+            if ($this->hasMultilineNestedParenBetween($tokens, $colonIndex, $nextColonIndex)) {
+                $groups[] = [];
+            }
+        }
+
+        return array_values(array_filter($groups, static fn (array $group): bool => $group !== []));
+    }
+
+    private function hasMultilineNestedParenBetween(Tokens $tokens, int $from, int $to): bool
+    {
+        for ($i = $from + 1; $i < $to; ++$i) {
+            if (!$tokens[$i]->equals('(')) {
+                continue;
+            }
+
+            $close = $tokens->findBlockEnd(Tokens::BLOCK_TYPE_PARENTHESIS_BRACE, $i);
+            if ($this->isMultiline($tokens, $i, $close)) {
+                return true;
+            }
+
+            $i = $close;
+        }
+
+        return false;
     }
 
     /**
