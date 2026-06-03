@@ -1,0 +1,4 @@
+services:
+    App\Infrastructure\Persistence\InMemory\InMemoryAuditLogAdapter: ~
+
+    App\Application\Port\AuditLogPort: '@App\Infrastructure\Persistence\InMemory\InMemoryAuditLogAdapter'

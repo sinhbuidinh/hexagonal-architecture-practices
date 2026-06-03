@@ -1,0 +1,79 @@
+parameters:
+    ignoreErrors:
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: laravel/app/Application/Audit/Query/ListAuditLogs.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: laravel/app/Application/Scheduling/Command/HoldAppointment.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: laravel/app/Domain/Audit/AuditStateDiff.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: laravel/app/Domain/Prescription/ConcurrentUpdateException.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: laravel/app/Domain/Scheduling/NoSlotsAvailableException.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: laravel/app/Infrastructure/Event/DomainExceptionHandler.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: laravel/app/Infrastructure/Event/Listener/RecordAuditLogListener.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 9
+            path: laravel/app/Infrastructure/Http/AppointmentController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: laravel/app/Infrastructure/Http/AuditLogController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: laravel/app/Infrastructure/Http/DoctorController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: laravel/app/Infrastructure/Http/HttpActionRunner.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: laravel/app/Infrastructure/Http/PatientController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 6
+            path: laravel/app/Infrastructure/Http/PrescriptionController.php

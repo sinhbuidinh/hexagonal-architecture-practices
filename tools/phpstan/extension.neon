@@ -1,0 +1,5 @@
+services:
+    -
+        class: HexagonPractise\Tools\PhpStan\Rules\MultilineCallRequiresNamedArgumentsRule
+        tags:
+            - phpstan.rules.rule

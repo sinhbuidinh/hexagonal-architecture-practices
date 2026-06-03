@@ -1,0 +1,5 @@
+# Run per-package analysis (each stack has its own autoload + baseline):
+#
+#   composer phpstan
+#
+# Configs: phpstan/pure-php.neon, phpstan/laravel.neon, phpstan/symfony.neon

@@ -1,0 +1,119 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+use HexagonPractise\Bootstrap\Container;
+
+$config = require dirname(__DIR__) . '/config/app.php';
+$useInMemory = in_array('--in-memory', $argv, true);
+$container = Container::fromConfig($config, $useInMemory);
+
+$command = $argv[1] ?? 'help';
+
+try {
+    match ($command) {
+        'availability:set' => runAvailabilitySet($container, $argv),
+        'appointment:hold' => runAppointmentHold($container, $argv),
+        'appointment:cancel' => runAppointmentCancel($container, $argv),
+        'appointment:confirm' => runAppointmentConfirm($container, $argv),
+        'expiration:process' => runExpirationProcess($container, $argv),
+        'prescription:create' => runPrescriptionCreate($container, $argv),
+        'prescription:get' => runPrescriptionGet($container, $argv),
+        'prescription:update' => runPrescriptionUpdate($container, $argv),
+        default => printHelp(),
+    };
+} catch (Throwable $e) {
+    fwrite(STDERR, $e->getMessage() . PHP_EOL);
+    exit(1);
+}
+
+function runAvailabilitySet(Container $container, array $argv): void
+{
+    $container->setPractitionerAvailability->execute($argv[2] ?? '', (int) ($argv[3] ?? 0));
+    echo "Practitioner availability set.\n";
+}
+
+function runAppointmentHold(Container $container, array $argv): void
+{
+    $result = $container->holdAppointment->execute(
+        $argv[2] ?? bin2hex(random_bytes(8)),
+        $argv[3] ?? '',
+        $argv[4] ?? '',
+        (int) ($argv[5] ?? 1),
+        new \DateTimeImmutable($argv[6] ?? '+15 minutes'),
+    );
+    echo json_encode($result, JSON_PRETTY_PRINT) . PHP_EOL;
+}
+
+function runAppointmentCancel(Container $container, array $argv): void
+{
+    $container->cancelAppointmentHold->execute($argv[2] ?? '');
+    echo "Appointment hold cancelled.\n";
+}
+
+function runAppointmentConfirm(Container $container, array $argv): void
+{
+    $container->confirmAppointment->execute($argv[2] ?? '');
+    echo "Appointment confirmed.\n";
+}
+
+function runExpirationProcess(Container $container, array $argv): void
+{
+    $processed = $container->processExpiredItems->execute((int) ($argv[2] ?? 100));
+    echo json_encode($processed, JSON_PRETTY_PRINT) . PHP_EOL;
+}
+
+function runPrescriptionCreate(Container $container, array $argv): void
+{
+    $result = $container->createPrescription->execute(
+        $argv[2] ?? bin2hex(random_bytes(8)),
+        $argv[3] ?? 'patient-1',
+        $argv[4] ?? 'Amoxicillin',
+        $argv[5] ?? '500mg',
+        $argv[6] ?? 'Take with food',
+    );
+    echo json_encode($result, JSON_PRETTY_PRINT) . PHP_EOL;
+}
+
+function runPrescriptionGet(Container $container, array $argv): void
+{
+    echo json_encode($container->getPrescription->execute($argv[2] ?? ''), JSON_PRETTY_PRINT) . PHP_EOL;
+}
+
+function runPrescriptionUpdate(Container $container, array $argv): void
+{
+    $payload = json_decode($argv[3] ?? '{}', true, 512, JSON_THROW_ON_ERROR);
+    $result = $container->updatePrescription->execute(
+        $argv[2] ?? '',
+        (int) ($payload['expected_version'] ?? 0),
+        (string) ($payload['actor'] ?? ''),
+        $payload,
+    );
+    echo json_encode($result, JSON_PRETTY_PRINT) . PHP_EOL;
+}
+
+function printHelp(): void
+{
+    echo <<<HELP
+Healthcare scheduling CLI
+
+  availability:set <practitioner_id> <slots>
+  appointment:hold <id> <practitioner_id> <patient_id> <slots> [expires_at]
+  appointment:cancel <id>
+  appointment:confirm <id>
+  expiration:process [limit]
+
+Prescriptions (optimistic locking — pass expected_version from GET):
+
+  prescription:create <id> <patient_id> <medication> <dosage> [instructions]
+  prescription:get <id>
+  prescription:update <id> '<json>'
+
+Flags:
+  --in-memory   Use in-memory adapters (no Redis)
+
+HELP;
+}

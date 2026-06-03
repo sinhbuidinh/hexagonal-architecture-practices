@@ -1,0 +1,85 @@
+parameters:
+    ignoreErrors:
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Application/Audit/Query/ListAuditLogs.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Application/Scheduling/Command/HoldAppointment.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Domain/Audit/AuditStateDiff.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: symfony/src/Domain/Prescription/ConcurrentUpdateException.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: symfony/src/Domain/Scheduling/NoSlotsAvailableException.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Infrastructure/Event/DomainExceptionHandler.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Infrastructure/Event/Listener/RecordAuditLogListener.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Infrastructure/Event/Subscriber/DomainExceptionSubscriber.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 8
+            path: symfony/src/Infrastructure/Http/AppointmentController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Infrastructure/Http/AuditLogController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Infrastructure/Http/DoctorController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Infrastructure/Http/HttpActionRunner.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: symfony/src/Infrastructure/Http/PatientController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 6
+            path: symfony/src/Infrastructure/Http/PrescriptionController.php

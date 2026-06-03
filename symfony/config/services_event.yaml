@@ -1,0 +1,29 @@
+services:
+    _instanceof:
+        App\Application\Port\ExceptionResponseListener:
+            tags: ['hexagon.exception_listener']
+        App\Application\Port\ActionAuditedListener:
+            tags: ['hexagon.action_audited_listener']
+
+    App\Infrastructure\Event\Listener\DoctorNotFoundExceptionListener: ~
+    App\Infrastructure\Event\Listener\PatientNotFoundExceptionListener: ~
+    App\Infrastructure\Event\Listener\PrescriptionNotFoundExceptionListener: ~
+    App\Infrastructure\Event\Listener\AppointmentNotFoundExceptionListener: ~
+    App\Infrastructure\Event\Listener\NoSlotsAvailableExceptionListener: ~
+    App\Infrastructure\Event\Listener\ConcurrentUpdateExceptionListener: ~
+    App\Infrastructure\Event\Listener\UnauthorizedPrescriptionChangeExceptionListener: ~
+    App\Infrastructure\Event\Listener\RecordAuditLogListener: ~
+
+    App\Infrastructure\Event\SyncEventDispatcher:
+        arguments:
+            $exceptionListeners: !tagged_iterator hexagon.exception_listener
+            $actionAuditedListeners: !tagged_iterator hexagon.action_audited_listener
+
+    App\Application\Port\EventDispatcherPort: '@App\Infrastructure\Event\SyncEventDispatcher'
+
+    App\Infrastructure\Event\DomainExceptionHandler: ~
+
+    App\Infrastructure\Http\HttpActionRunner: ~
+
+    App\Infrastructure\Event\Subscriber\DomainExceptionSubscriber:
+        tags: ['kernel.event_subscriber']

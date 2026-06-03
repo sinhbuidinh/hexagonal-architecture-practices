@@ -1,0 +1,5 @@
+services:
+    App\Infrastructure\Persistence\InMemory\InMemoryPrescriptionAdapter: ~
+
+    App\Application\Port\PrescriptionCommandPort: '@App\Infrastructure\Persistence\InMemory\InMemoryPrescriptionAdapter'
+    App\Application\Port\PrescriptionQueryPort: '@App\Infrastructure\Persistence\InMemory\InMemoryPrescriptionAdapter'

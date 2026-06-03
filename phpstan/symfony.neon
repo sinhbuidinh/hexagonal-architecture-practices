@@ -1,0 +1,13 @@
+includes:
+    - ../tools/phpstan/extension.neon
+    - ../phpstan-baseline-symfony.neon
+
+parameters:
+    level: 0
+    paths:
+        - ../symfony/src
+    excludePaths:
+        - ../symfony/src/Kernel.php
+    bootstrapFiles:
+        - ../symfony/vendor/autoload.php
+    treatPhpDocTypesAsCertain: false

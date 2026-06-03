@@ -1,0 +1,10 @@
+services:
+    App\Infrastructure\Persistence\InMemory\InMemoryDoctorAdapter: ~
+
+    App\Application\Port\DoctorCommandPort: '@App\Infrastructure\Persistence\InMemory\InMemoryDoctorAdapter'
+    App\Application\Port\DoctorQueryPort: '@App\Infrastructure\Persistence\InMemory\InMemoryDoctorAdapter'
+
+    App\Infrastructure\Persistence\InMemory\InMemoryPatientAdapter: ~
+
+    App\Application\Port\PatientCommandPort: '@App\Infrastructure\Persistence\InMemory\InMemoryPatientAdapter'
+    App\Application\Port\PatientQueryPort: '@App\Infrastructure\Persistence\InMemory\InMemoryPatientAdapter'

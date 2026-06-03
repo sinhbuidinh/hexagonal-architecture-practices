@@ -1,0 +1,13 @@
+includes:
+    - ../tools/phpstan/extension.neon
+    - ../phpstan-baseline-laravel.neon
+
+parameters:
+    level: 0
+    paths:
+        - ../laravel/app
+    excludePaths:
+        - ../laravel/app/Models/User.php
+    bootstrapFiles:
+        - ../laravel/vendor/autoload.php
+    treatPhpDocTypesAsCertain: false

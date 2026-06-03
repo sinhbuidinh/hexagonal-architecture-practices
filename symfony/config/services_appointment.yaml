@@ -1,0 +1,11 @@
+services:
+    App\Infrastructure\Persistence\InMemory\InMemorySchedulingAdapter: ~
+
+    App\Application\Port\SchedulingCommandPort: '@App\Infrastructure\Persistence\InMemory\InMemorySchedulingAdapter'
+    App\Application\Port\SchedulingQueryPort: '@App\Infrastructure\Persistence\InMemory\InMemorySchedulingAdapter'
+
+    App\Application\Port\ExpirationQueuePort:
+        class: App\Infrastructure\Persistence\InMemory\InMemoryExpirationQueueAdapter
+
+    App\Application\Port\ClockPort:
+        class: App\Infrastructure\Clock\SystemClock

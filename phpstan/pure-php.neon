@@ -1,0 +1,9 @@
+includes:
+    - ../tools/phpstan/extension.neon
+    - ../phpstan-baseline-pure-php.neon
+
+parameters:
+    level: 0
+    paths:
+        - ../pure-php/src
+    treatPhpDocTypesAsCertain: false

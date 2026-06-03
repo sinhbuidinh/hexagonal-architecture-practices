@@ -1,0 +1,151 @@
+parameters:
+    ignoreErrors:
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Application/Audit/Query/ListAuditLogs.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Application/Scheduling/Command/HoldAppointment.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Domain/Audit/AuditStateDiff.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: pure-php/src/Domain/Prescription/ConcurrentUpdateException.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: pure-php/src/Domain/Scheduling/NoSlotsAvailableException.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Infrastructure/Event/DomainExceptionHandler.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Infrastructure/Event/Listener/RecordAuditLogListener.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 12
+            path: pure-php/src/Infrastructure/Http/AppointmentController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Infrastructure/Http/AuditHttp.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Infrastructure/Http/AuditLogController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 2
+            path: pure-php/src/Infrastructure/Http/DoctorController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Infrastructure/Http/HttpActionRunner.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 3
+            path: pure-php/src/Infrastructure/Http/PatientController.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 9
+            path: pure-php/src/Infrastructure/Http/PrescriptionController.php
+
+        -
+            message: '#^Instantiated class Predis\\Client not found\.$#'
+            identifier: class.notFound
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisClientFactory.php
+
+        -
+            message: '#^Method HexagonPractise\\Infrastructure\\Persistence\\Redis\\RedisClientFactory\:\:fromDsn\(\) has invalid return type Predis\\Client\.$#'
+            identifier: class.notFound
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisClientFactory.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisExpirationQueueAdapter.php
+
+        -
+            message: '#^Parameter \$redis of method HexagonPractise\\Infrastructure\\Persistence\\Redis\\RedisExpirationQueueAdapter\:\:__construct\(\) has invalid type Predis\\Client\.$#'
+            identifier: class.notFound
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisExpirationQueueAdapter.php
+
+        -
+            message: '#^Property HexagonPractise\\Infrastructure\\Persistence\\Redis\\RedisExpirationQueueAdapter\:\:\$redis has unknown class Predis\\Client as its type\.$#'
+            identifier: class.notFound
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisExpirationQueueAdapter.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisPrescriptionAdapter.php
+
+        -
+            message: '#^Parameter \$redis of method HexagonPractise\\Infrastructure\\Persistence\\Redis\\RedisPrescriptionAdapter\:\:__construct\(\) has invalid type Predis\\Client\.$#'
+            identifier: class.notFound
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisPrescriptionAdapter.php
+
+        -
+            message: '#^Property HexagonPractise\\Infrastructure\\Persistence\\Redis\\RedisPrescriptionAdapter\:\:\$redis has unknown class Predis\\Client as its type\.$#'
+            identifier: class.notFound
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisPrescriptionAdapter.php
+
+        -
+            message: '#^Multiline call must use named arguments for every parameter\.$#'
+            identifier: hexagon.multilineCallRequiresNamedArguments
+            count: 3
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisSchedulingAdapter.php
+
+        -
+            message: '#^Parameter \$redis of method HexagonPractise\\Infrastructure\\Persistence\\Redis\\RedisSchedulingAdapter\:\:__construct\(\) has invalid type Predis\\Client\.$#'
+            identifier: class.notFound
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisSchedulingAdapter.php
+
+        -
+            message: '#^Property HexagonPractise\\Infrastructure\\Persistence\\Redis\\RedisSchedulingAdapter\:\:\$redis has unknown class Predis\\Client as its type\.$#'
+            identifier: class.notFound
+            count: 1
+            path: pure-php/src/Infrastructure/Persistence/Redis/RedisSchedulingAdapter.php

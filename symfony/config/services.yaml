@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+imports:
+    - { resource: services_audit.yaml }
+    - { resource: services_event.yaml }
+    - { resource: services_catalog.yaml }
+    - { resource: services_appointment.yaml }
+    - { resource: services_prescription.yaml }
+
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Domain/'
