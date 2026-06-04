@@ -24,7 +24,7 @@ final readonly class ListBookableAppointments
         $bookable = [];
 
         foreach ($this->doctors->listAll() as $doctor) {
-            $slots      = $this->scheduling->availableSlots($doctor->id);
+            $slots = $this->scheduling->availableSlots($doctor->id);
             if ($slots->value <= 0) {
                 continue;
             }

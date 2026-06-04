@@ -32,10 +32,22 @@ get_changed_files() {
     esac
 }
 
+matches_package() {
+    local file="$1"
+    local pkg="${PACKAGE:-}"
+
+    if [[ -z "$pkg" ]]; then
+        return 0
+    fi
+
+    [[ "$file" == "${pkg}/"* ]]
+}
+
 is_formattable_php() {
     local file="$1"
     [[ "$file" == *.php ]] || return 1
     [[ -f "$file" ]] || return 1
+    matches_package "$file" || return 1
 
     case "$file" in
         pure-php/src/*|pure-php/tests/*|pure-php/public/*|pure-php/bin/*) return 0 ;;
@@ -47,13 +59,26 @@ is_formattable_php() {
 
 phpstan_stack_for() {
     local file="$1"
+    local stack=""
 
     case "$file" in
-        pure-php/src/*|pure-php/tests/*) echo pure-php ;;
-        laravel/app/*|laravel/routes/*|laravel/tests/*) echo laravel ;;
-        symfony/src/*) echo symfony ;;
-        *) echo "" ;;
+        pure-php/src/*|pure-php/tests/*) stack=pure-php ;;
+        laravel/app/*|laravel/routes/*|laravel/tests/*) stack=laravel ;;
+        symfony/src/*) stack=symfony ;;
+        *) stack="" ;;
     esac
+
+    if [[ -z "$stack" ]]; then
+        echo ""
+        return 0
+    fi
+
+    if [[ -n "${PACKAGE:-}" && "$stack" != "${PACKAGE}" ]]; then
+        echo ""
+        return 0
+    fi
+
+    echo "$stack"
 }
 
 collect_formattable_php() {

@@ -77,9 +77,9 @@ final class PrescriptionController
     /** @return array<string, mixed> */
     private function update(HttpActionRunner $runner, string $prescriptionId, string $body): array
     {
-        $data        = $this->decode($body);
-        $actorRole   = (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician');
-        $audit       = AuditHttp::contextFrom($data)->withActor(
+        $data      = $this->decode($body);
+        $actorRole = (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician');
+        $audit     = AuditHttp::contextFrom($data)->withActor(
             (string) ($data['actor_id'] ?? $data['actor'] ?? 'system'),
             $actorRole,
         );

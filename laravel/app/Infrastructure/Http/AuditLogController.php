@@ -19,7 +19,7 @@ final class AuditLogController
 
     public function index(Request $request): JsonResponse
     {
-        $limit = (int) $request->query('limit', 100);
+        $limit = (int) $request->query('limit', '100');
         $audit = AuditHttp::merge($request, ['actor_role' => 'Auditor']);
 
         return HttpPayload::toJsonResponse($this->httpActionRunner->run(

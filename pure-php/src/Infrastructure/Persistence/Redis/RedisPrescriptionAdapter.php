@@ -108,7 +108,7 @@ final class RedisPrescriptionAdapter implements PrescriptionCommandPort, Prescri
             medication   : $data['medication'] ?? '',
             dosage       : $data['dosage'] ?? '',
             instructions : $data['instructions'] ?? '',
-            status       : PrescriptionStatus::fromString($data['status'] ?? PrescriptionStatus::Draft->value),
+            status       : PrescriptionStatus::fromString($data['status'] ?? PrescriptionStatus::DRAFT->value),
             pharmacyNotes: $data['pharmacy_notes'] ?? '',
             version      : (int) ($data['version'] ?? 1),
             lastUpdatedBy: $lastUpdatedBy,

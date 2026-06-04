@@ -25,7 +25,7 @@ final class PatientController
             'actor_role' => 'Patient',
         ]);
 
-        $payload   = $this->httpActionRunner->run(
+        $payload = $this->httpActionRunner->run(
             function () use ($request, $patientId): array {
                 $data = $this->createPatient->execute(
                     $patientId,

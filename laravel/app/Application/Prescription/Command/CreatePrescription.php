@@ -30,7 +30,7 @@ final readonly class CreatePrescription
             medication   : $medication,
             dosage       : $dosage,
             instructions : $instructions,
-            status       : PrescriptionStatus::Draft,
+            status       : PrescriptionStatus::DRAFT,
             pharmacyNotes: '',
             version      : 1,
             lastUpdatedBy: null,

@@ -6,9 +6,9 @@ namespace HexagonPractise\Domain\Prescription;
 
 enum PrescriptionStatus: string
 {
-    case Draft     = 'draft';
-    case Active    = 'active';
-    case Dispensed = 'dispensed';
+    case DRAFT     = 'draft';
+    case ACTIVE    = 'active';
+    case DISPENSED = 'dispensed';
 
     public static function fromString(string $value): self
     {

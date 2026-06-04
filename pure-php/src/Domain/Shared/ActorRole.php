@@ -6,14 +6,14 @@ namespace HexagonPractise\Domain\Shared;
 
 enum ActorRole: string
 {
-    case Doctor     = 'doctor';
-    case Pharmacist = 'pharmacist';
+    case DOCTOR     = 'doctor';
+    case PHARMACIST = 'pharmacist';
 
     public static function fromString(string $value): self
     {
         return match (strtolower($value)) {
-            'doctor'     => self::Doctor,
-            'pharmacist' => self::Pharmacist,
+            'doctor'     => self::DOCTOR,
+            'pharmacist' => self::PHARMACIST,
             default      => throw new \InvalidArgumentException(sprintf('Unknown actor role: %s', $value)),
         };
     }

@@ -22,7 +22,7 @@ final class PrescriptionRaceTest extends TestCase
     protected function setUp(): void
     {
         $this->prescriptions = new InMemoryPrescriptionAdapter();
-        $this->update        = new UpdatePrescription($this->prescriptions, $this->prescriptions);
+        $this->update = new UpdatePrescription($this->prescriptions, $this->prescriptions);
 
         (new CreatePrescription($this->prescriptions))->execute(
             'rx-1',
@@ -56,7 +56,7 @@ final class PrescriptionRaceTest extends TestCase
     {
         $this->update->execute('rx-1', 1, 'doctor', ['status' => 'active']);
 
-        $current    = (new GetPrescription($this->prescriptions))->execute('rx-1');
+        $current = (new GetPrescription($this->prescriptions))->execute('rx-1');
 
         $pharmacist = $this->update->execute('rx-1', $current['version'], 'pharmacist', [
             'pharmacy_notes' => 'Dispensed at counter 2',

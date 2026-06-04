@@ -28,9 +28,9 @@ final class DomainExceptionHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->auditLog = new InMemoryAuditLogAdapter();
-        $clock          = new FrozenClock(new \DateTimeImmutable('2026-06-03T12:00:00Z'));
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-03T12:00:00Z'));
 
-        $dispatcher     = new SyncEventDispatcher(
+        $dispatcher = new SyncEventDispatcher(
             [
                 new DoctorNotFoundExceptionListener(),
                 new ConcurrentUpdateExceptionListener(),
@@ -38,7 +38,7 @@ final class DomainExceptionHandlerTest extends TestCase
             [new RecordAuditLogListener($this->auditLog)],
         );
 
-        $this->handler  = new DomainExceptionHandler($dispatcher, $clock, new AuditRecordBuilder());
+        $this->handler = new DomainExceptionHandler($dispatcher, $clock, new AuditRecordBuilder());
     }
 
     public function testDispatchesToMatchingListener(): void
@@ -53,7 +53,7 @@ final class DomainExceptionHandlerTest extends TestCase
         $this->assertNotNull($response);
         $this->assertSame(404, $response->status);
 
-        $row      = $this->auditLog->listRecent(1)[0]->toArray();
+        $row = $this->auditLog->listRecent(1)[0]->toArray();
         $this->assertSame('failure', $row['outcome']);
         $this->assertSame('user_dr_smith_882', $row['actor_id']);
         $this->assertSame('AVAILABILITY_SET', $row['action_type']);

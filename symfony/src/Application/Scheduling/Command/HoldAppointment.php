@@ -42,12 +42,12 @@ final readonly class HoldAppointment
             throw new DoctorNotFoundException($practitioner);
         }
 
-        $patient      = new PatientId($patientId);
+        $patient = new PatientId($patientId);
         if ($this->patients->find($patient) === null) {
             throw new PatientNotFoundException($patient);
         }
 
-        $hold         = new AppointmentHold(
+        $hold = new AppointmentHold(
             id            : new AppointmentId($appointmentId),
             practitionerId: $practitioner,
             patientId     : $patient,

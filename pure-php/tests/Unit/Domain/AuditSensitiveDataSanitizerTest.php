@@ -31,7 +31,17 @@ final class AuditSensitiveDataSanitizerTest extends TestCase
         $this->assertSame('[REDACTED]', $safe['instructions']);
         $this->assertSame('[REDACTED]', $safe['pharmacy_notes']);
         $this->assertSame('[REDACTED]', $safe['password']);
-        $this->assertSame('[REDACTED]', $safe['ssn']);
+        $this->assertSame('###-##-6789', $safe['ssn']);
+    }
+
+    public function testSanitizeMessageMasksSsnAndCardKeepingLastFour(): void
+    {
+        $message = $this->sanitizer->sanitizeMessage('Patient SSN 123-45-6789 invalid; card 4111-1111-1111-1111');
+
+        $this->assertSame(
+            'Patient SSN ###-##-6789 invalid; card ####-####-####-1111',
+            $message,
+        );
     }
 
     public function testStateDiffShowsFieldTransitions(): void

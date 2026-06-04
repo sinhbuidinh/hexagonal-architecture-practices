@@ -19,7 +19,7 @@ final class InMemorySchedulingAdapter implements SchedulingCommandPort, Scheduli
     private array $availability = [];
 
     /** @var array<string, AppointmentHold> */
-    private array $holds        = [];
+    private array $holds = [];
 
     public function setAvailability(PractitionerId $practitionerId, SlotCount $slots): void
     {
@@ -33,7 +33,7 @@ final class InMemorySchedulingAdapter implements SchedulingCommandPort, Scheduli
 
     public function hold(AppointmentHold $hold): void
     {
-        $available                     = $this->availableSlots($hold->practitionerId);
+        $available = $this->availableSlots($hold->practitionerId);
         if (!$available->isGreaterOrEqual($hold->slots)) {
             throw new NoSlotsAvailableException(
                 practitionerId: $hold->practitionerId,
@@ -42,19 +42,19 @@ final class InMemorySchedulingAdapter implements SchedulingCommandPort, Scheduli
             );
         }
 
-        $key                           = $hold->practitionerId->value;
-        $this->availability[$key]      = $available->subtract($hold->slots)->value;
+        $key = $hold->practitionerId->value;
+        $this->availability[$key] = $available->subtract($hold->slots)->value;
         $this->holds[$hold->id->value] = $hold;
     }
 
     public function cancelHold(AppointmentId $appointmentId): void
     {
-        $hold                     = $this->holds[$appointmentId->value] ?? null;
+        $hold = $this->holds[$appointmentId->value] ?? null;
         if ($hold === null) {
             throw new AppointmentNotFoundException($appointmentId);
         }
 
-        $key                      = $hold->practitionerId->value;
+        $key = $hold->practitionerId->value;
         $this->availability[$key] = ($this->availability[$key] ?? 0) + $hold->slots->value;
         unset($this->holds[$appointmentId->value]);
     }

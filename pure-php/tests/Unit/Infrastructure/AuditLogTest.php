@@ -33,7 +33,7 @@ final class AuditLogTest extends TestCase
             [new RecordAuditLogListener($auditLog)],
         );
 
-        $request    = new AuditRequestContext(
+        $request = new AuditRequestContext(
             actorId  : 'user_dr_smith_882',
             actorRole: 'Physician',
             patientId: 'pat_99513',
@@ -41,18 +41,18 @@ final class AuditLogTest extends TestCase
             deviceId : 'iPad_Clinic_04',
         );
 
-        $builder    = new AuditRecordBuilder();
+        $builder = new AuditRecordBuilder();
         $dispatcher->dispatch($builder->buildAuditedEvent(
             action     : AuditActions::APPOINTMENT_CANCEL,
-            outcome    : AuditOutcome::Success,
+            outcome    : AuditOutcome::SUCCESS,
             request    : $request,
             occurredAt : $clock->now(),
             beforeState: ['status' => 'scheduled'],
             afterState : ['status' => 'cancelled'],
         ));
 
-        $entry      = $auditLog->listRecent(1)[0];
-        $row        = $entry->toArray();
+        $entry = $auditLog->listRecent(1)[0];
+        $row   = $entry->toArray();
 
         $this->assertSame('2026-06-03T09:48:42.123Z', $row['timestamp']);
         $this->assertSame('user_dr_smith_882', $row['actor_id']);
@@ -79,14 +79,14 @@ final class AuditLogTest extends TestCase
 
         (new CreateDoctor($doctors))->execute('dr-1', 'Dr One');
 
-        $handler    = new DomainExceptionHandler($dispatcher, $clock);
+        $handler = new DomainExceptionHandler($dispatcher, $clock);
         $handler->handle(
             new DoctorNotFoundException(new PractitionerId('missing')),
             AuditActions::AVAILABILITY_SET,
             new AuditRequestContext('reception_1', 'Receptionist', null, '10.0.0.8', 'desktop'),
         );
 
-        $row        = $auditLog->listRecent(1)[0]->toArray();
+        $row = $auditLog->listRecent(1)[0]->toArray();
         $this->assertSame('failure', $row['outcome']);
         $this->assertSame(404, $row['http_status']);
         $this->assertSame('reception_1', $row['actor_id']);

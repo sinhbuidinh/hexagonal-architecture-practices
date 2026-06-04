@@ -23,11 +23,11 @@ done < <(get_changed_files | collect_phpstan_php)
 total=$((${#pure_files[@]} + ${#laravel_files[@]} + ${#symfony_files[@]}))
 
 if [[ "$total" -eq 0 ]]; then
-    echo "No changed PHP files in PHPStan scope (SCOPE=${SCOPE:-worktree})."
+    echo "No changed PHP files in PHPStan scope (SCOPE=${SCOPE:-worktree}${PACKAGE:+, PACKAGE=${PACKAGE}})."
     exit 0
 fi
 
-echo "Analysing ${total} file(s) (SCOPE=${SCOPE:-worktree}):"
+echo "Analysing ${total} file(s) (SCOPE=${SCOPE:-worktree}${PACKAGE:+, PACKAGE=${PACKAGE}}):"
 
 run_stack() {
     local name="$1"

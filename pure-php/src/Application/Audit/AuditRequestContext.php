@@ -21,7 +21,7 @@ final readonly class AuditRequestContext
     /** @param array<string, mixed> $hints keys: actor_id, actor, actor_role, patient_id */
     public static function fromHttpHints(array $hints = []): self
     {
-        $actorId   = (string) ($hints['actor_id']
+        $actorId = (string) ($hints['actor_id']
             ?? $_SERVER['HTTP_X_ACTOR_ID']
             ?? $_SERVER['HTTP_X_USER_ID']
             ?? 'system');

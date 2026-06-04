@@ -18,11 +18,11 @@ while IFS= read -r file; do
 done < <(get_changed_files | collect_formattable_php)
 
 if [[ ${#files[@]} -eq 0 ]]; then
-    echo "No changed PHP files in format scope (SCOPE=${SCOPE:-worktree})."
+    echo "No changed PHP files in format scope (SCOPE=${SCOPE:-worktree}${PACKAGE:+, PACKAGE=${PACKAGE}})."
     exit 0
 fi
 
-echo "Formatting ${#files[@]} file(s) (SCOPE=${SCOPE:-worktree}):"
+echo "Formatting ${#files[@]} file(s) (SCOPE=${SCOPE:-worktree}${PACKAGE:+, PACKAGE=${PACKAGE}}):"
 printf '  %s\n' "${files[@]}"
 
 args=(

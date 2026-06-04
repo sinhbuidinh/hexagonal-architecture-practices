@@ -26,7 +26,7 @@ final class BookingFlowTest extends TestCase
         (new SetPractitionerAvailability($scheduling, $doctors))->execute('dr-b', 0);
         (new SetPractitionerAvailability($scheduling, $doctors))->execute('dr-c', 1);
 
-        $list       = (new ListBookableAppointments($doctors, $scheduling))->execute();
+        $list = (new ListBookableAppointments($doctors, $scheduling))->execute();
 
         $this->assertCount(2, $list);
         $this->assertSame([

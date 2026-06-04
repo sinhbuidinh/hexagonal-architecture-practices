@@ -26,7 +26,7 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
         private readonly string $slotsKeyPrefix,
         private readonly string $appointmentKeyPrefix,
     ) {
-        $this->holdScript    = LuaScriptLoader::load('hold_appointment.lua');
+        $this->holdScript = LuaScriptLoader::load('hold_appointment.lua');
         $this->releaseScript = LuaScriptLoader::load('release_appointment.lua');
         $this->confirmScript = LuaScriptLoader::load('confirm_appointment.lua');
     }
@@ -73,7 +73,7 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
             throw new AppointmentNotFoundException($appointmentId);
         }
 
-        $ok   = $this->redis->eval(
+        $ok = $this->redis->eval(
             $this->releaseScript,
             2,
             $this->slotsKey($hold->practitionerId),

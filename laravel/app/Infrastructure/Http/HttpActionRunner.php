@@ -39,7 +39,7 @@ final class HttpActionRunner
 
             $this->dispatcher->dispatch($this->auditRecordBuilder->buildAuditedEvent(
                 action     : $auditAction,
-                outcome    : AuditOutcome::Success,
+                outcome    : AuditOutcome::SUCCESS,
                 request    : $auditRequest,
                 occurredAt : $this->clock->now(),
                 beforeState: $beforeState,

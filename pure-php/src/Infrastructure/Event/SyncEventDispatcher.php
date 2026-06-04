@@ -12,8 +12,10 @@ use HexagonPractise\Application\Port\ExceptionResponseListener;
 
 final class SyncEventDispatcher implements EventDispatcherPort
 {
-    /** @param list<ExceptionResponseListener> $exceptionListeners */
-    /** @param list<ActionAuditedListener> $actionAuditedListeners */
+    /**
+     * @param list<ExceptionResponseListener> $exceptionListeners
+     * @param list<ActionAuditedListener> $actionAuditedListeners
+     */
     public function __construct(
         private readonly array $exceptionListeners,
         private readonly array $actionAuditedListeners,

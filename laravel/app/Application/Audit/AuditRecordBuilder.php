@@ -83,7 +83,7 @@ final class AuditRecordBuilder
     /** @param array<string, mixed> $data */
     private function snapshotFromData(array $data): array
     {
-        $allowed  = [
+        $allowed = [
             'doctor_id', 'patient_id', 'prescription_id', 'appointment_id',
             'practitioner_id', 'name', 'status', 'version', 'slots', 'available_slots',
             'expires_at', 'medication', 'dosage',

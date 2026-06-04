@@ -80,9 +80,9 @@ final class Container
 
     public static function fromConfig(array $config, bool $useInMemory = false): self
     {
-        $doctors       = new InMemoryDoctorAdapter();
-        $patients      = new InMemoryPatientAdapter();
-        $auditLog      = new InMemoryAuditLogAdapter();
+        $doctors  = new InMemoryDoctorAdapter();
+        $patients = new InMemoryPatientAdapter();
+        $auditLog = new InMemoryAuditLogAdapter();
 
         if ($useInMemory) {
             $scheduling    = new InMemorySchedulingAdapter();
@@ -103,8 +103,8 @@ final class Container
             );
         }
 
-        $redis         = RedisClientFactory::fromDsn($config['redis_dsn']);
-        $scheduling    = new RedisSchedulingAdapter(
+        $redis      = RedisClientFactory::fromDsn($config['redis_dsn']);
+        $scheduling = new RedisSchedulingAdapter(
             redis               : $redis,
             slotsKeyPrefix      : $config['slots_key_prefix'],
             appointmentKeyPrefix: $config['appointment_key_prefix'],
@@ -146,44 +146,44 @@ final class Container
         AuditLogPort $auditLog,
         ClockPort $clock,
     ) {
-        $this->schedulingCommands          = $schedulingCommands;
-        $this->schedulingQueries           = $schedulingQueries;
-        $this->expirationQueue             = $expirationQueue;
-        $this->prescriptionCommands        = $prescriptionCommands;
-        $this->prescriptionQueries         = $prescriptionQueries;
-        $this->doctorCommands              = $doctorCommands;
-        $this->doctorQueries               = $doctorQueries;
-        $this->patientCommands             = $patientCommands;
-        $this->patientQueries              = $patientQueries;
-        $this->auditLog                    = $auditLog;
-        $this->clock                       = $clock;
+        $this->schedulingCommands = $schedulingCommands;
+        $this->schedulingQueries = $schedulingQueries;
+        $this->expirationQueue = $expirationQueue;
+        $this->prescriptionCommands = $prescriptionCommands;
+        $this->prescriptionQueries = $prescriptionQueries;
+        $this->doctorCommands = $doctorCommands;
+        $this->doctorQueries = $doctorQueries;
+        $this->patientCommands = $patientCommands;
+        $this->patientQueries = $patientQueries;
+        $this->auditLog = $auditLog;
+        $this->clock = $clock;
 
         $this->setPractitionerAvailability = new SetPractitionerAvailability($schedulingCommands, $doctorQueries);
-        $this->cancelAppointmentHold       = new CancelAppointmentHold($schedulingCommands, $expirationQueue);
-        $this->holdAppointment             = new HoldAppointment(
+        $this->cancelAppointmentHold = new CancelAppointmentHold($schedulingCommands, $expirationQueue);
+        $this->holdAppointment = new HoldAppointment(
             scheduling     : $schedulingCommands,
             expirationQueue: $expirationQueue,
             doctors        : $doctorQueries,
             patients       : $patientQueries,
         );
-        $this->confirmAppointment          = new ConfirmAppointment($schedulingCommands, $expirationQueue);
-        $this->processExpiredItems         = new ProcessExpiredItems(
+        $this->confirmAppointment = new ConfirmAppointment($schedulingCommands, $expirationQueue);
+        $this->processExpiredItems = new ProcessExpiredItems(
             expirationQueue      : $expirationQueue,
             cancelAppointmentHold: $this->cancelAppointmentHold,
             clock                : $clock,
         );
 
-        $this->createPrescription          = new CreatePrescription($prescriptionCommands);
-        $this->getPrescription             = new GetPrescription($prescriptionQueries);
-        $this->updatePrescription          = new UpdatePrescription($prescriptionCommands, $prescriptionQueries);
+        $this->createPrescription = new CreatePrescription($prescriptionCommands);
+        $this->getPrescription = new GetPrescription($prescriptionQueries);
+        $this->updatePrescription = new UpdatePrescription($prescriptionCommands, $prescriptionQueries);
 
-        $this->createDoctor                = new CreateDoctor($doctorCommands);
-        $this->createPatient               = new CreatePatient($patientCommands);
-        $this->listBookableAppointments    = new ListBookableAppointments($doctorQueries, $schedulingQueries);
-        $this->listAuditLogs               = new ListAuditLogs($auditLog);
+        $this->createDoctor = new CreateDoctor($doctorCommands);
+        $this->createPatient = new CreatePatient($patientCommands);
+        $this->listBookableAppointments = new ListBookableAppointments($doctorQueries, $schedulingQueries);
+        $this->listAuditLogs = new ListAuditLogs($auditLog);
 
-        $auditListener                     = new RecordAuditLogListener($auditLog);
-        $exceptionDispatcher               = new SyncEventDispatcher(
+        $auditListener       = new RecordAuditLogListener($auditLog);
+        $exceptionDispatcher = new SyncEventDispatcher(
             exceptionListeners    : [
                 new DoctorNotFoundExceptionListener(),
                 new PatientNotFoundExceptionListener(),
@@ -195,8 +195,8 @@ final class Container
             ],
             actionAuditedListeners: [$auditListener],
         );
-        $exceptionHandler                  = new DomainExceptionHandler($exceptionDispatcher, $clock);
-        $this->httpActionRunner            = new HttpActionRunner($exceptionHandler, $exceptionDispatcher, $clock);
+        $exceptionHandler = new DomainExceptionHandler($exceptionDispatcher, $clock);
+        $this->httpActionRunner = new HttpActionRunner($exceptionHandler, $exceptionDispatcher, $clock);
     }
 
     public function auditLog(): AuditLogPort

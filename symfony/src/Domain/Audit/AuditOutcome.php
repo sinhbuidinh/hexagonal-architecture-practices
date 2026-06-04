@@ -6,6 +6,6 @@ namespace App\Domain\Audit;
 
 enum AuditOutcome: string
 {
-    case Success = 'success';
-    case Failure = 'failure';
+    case SUCCESS = 'success';
+    case FAILURE = 'failure';
 }

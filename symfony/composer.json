@@ -48,13 +48,13 @@
         "symfony/polyfill-php84": "*"
     },
     "scripts": {
-        "format": "@composer --working-dir=.. format",
-        "format:check": "@composer --working-dir=.. format:check",
-        "format:changed": "@composer --working-dir=.. format:changed",
-        "format:changed:check": "@composer --working-dir=.. format:changed:check",
-        "spaces:check": "@composer --working-dir=.. spaces:check",
-        "phpstan": "@composer --working-dir=.. phpstan",
-        "phpstan:changed": "@composer --working-dir=.. phpstan:changed",
+        "format": "@composer --working-dir=.. format:symfony",
+        "format:check": "@composer --working-dir=.. format:check:symfony",
+        "format:changed": "@composer --working-dir=.. format:changed:symfony",
+        "format:changed:check": "@composer --working-dir=.. format:changed:check:symfony",
+        "spaces:check": "@composer --working-dir=.. spaces:check:symfony",
+        "phpstan": "@composer --working-dir=.. phpstan:symfony",
+        "phpstan:changed": "@composer --working-dir=.. phpstan:changed:symfony",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"

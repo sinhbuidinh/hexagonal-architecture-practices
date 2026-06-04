@@ -60,7 +60,7 @@ final readonly class UpdatePrescription
 
         $this->assertRoleRules($actor, $changes);
 
-        $saved   = $this->prescriptions->updateIfVersionMatches($updated, $expectedVersion);
+        $saved = $this->prescriptions->updateIfVersionMatches($updated, $expectedVersion);
 
         return $saved->toArray();
     }
@@ -95,10 +95,10 @@ final readonly class UpdatePrescription
     {
         if (isset($changes['status']) && $changes['status'] !== null) {
             $status = PrescriptionStatus::fromString((string) $changes['status']);
-            if ($actor === ActorRole::Doctor && $status === PrescriptionStatus::Dispensed) {
+            if ($actor === ActorRole::DOCTOR && $status === PrescriptionStatus::DISPENSED) {
                 throw new UnauthorizedPrescriptionChangeException($actor, 'status→dispensed');
             }
-            if ($actor === ActorRole::Pharmacist && $status === PrescriptionStatus::Draft) {
+            if ($actor === ActorRole::PHARMACIST && $status === PrescriptionStatus::DRAFT) {
                 throw new UnauthorizedPrescriptionChangeException($actor, 'status→draft');
             }
         }
@@ -107,8 +107,8 @@ final readonly class UpdatePrescription
     private function assertMayTouch(ActorRole $actor, string $field): void
     {
         $allowed = match ($actor) {
-            ActorRole::Doctor     => ['medication', 'dosage', 'instructions', 'status'],
-            ActorRole::Pharmacist => ['pharmacy_notes', 'status'],
+            ActorRole::DOCTOR     => ['medication', 'dosage', 'instructions', 'status'],
+            ActorRole::PHARMACIST => ['pharmacy_notes', 'status'],
         };
 
         if (!in_array($field, $allowed, true)) {

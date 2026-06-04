@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use HexagonPractise\Tools\PhpCsFixer\AlignConsecutiveAssignmentEqualsFixer;
 use HexagonPractise\Tools\PhpCsFixer\AlignMultilineNamedArgumentsFixer;
+use HexagonPractise\Tools\PhpCsFixer\EnumCaseStyleFixer;
 
 $finder = PhpCsFixer\Finder::create()
     ->in([
@@ -20,7 +22,11 @@ $finder = PhpCsFixer\Finder::create()
     ->ignoreVCS(true);
 
 return (new PhpCsFixer\Config())
-    ->registerCustomFixers([new AlignMultilineNamedArgumentsFixer()])
+    ->registerCustomFixers([
+        new AlignConsecutiveAssignmentEqualsFixer(),
+        new AlignMultilineNamedArgumentsFixer(),
+        new EnumCaseStyleFixer(),
+    ])
     ->setRules([
         '@PSR12' => true,
         'indentation_type' => true,
@@ -32,13 +38,15 @@ return (new PhpCsFixer\Config())
         'binary_operator_spaces' => [
             'default' => 'single_space',
             'operators' => [
-                '=' => 'align_by_scope',
+                '=' => 'single_space',
                 '=>' => 'align',
             ],
         ],
         'single_space_around_construct' => [
             'constructs_followed_by_a_single_space' => ['named_argument'],
         ],
+        'HexagonPractise/align_consecutive_assignment_equals' => true,
         'HexagonPractise/align_multiline_named_arguments' => true,
+        'HexagonPractise/enum_case_style' => true,
     ])
     ->setFinder($finder);

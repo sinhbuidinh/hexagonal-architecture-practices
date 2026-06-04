@@ -23,13 +23,13 @@
     "scripts": {
         "test": "phpunit",
         "serve": "php -S localhost:8080 -t public",
-        "format": "@composer --working-dir=.. format",
-        "format:check": "@composer --working-dir=.. format:check",
-        "format:changed": "@composer --working-dir=.. format:changed",
-        "format:changed:check": "@composer --working-dir=.. format:changed:check",
-        "spaces:check": "@composer --working-dir=.. spaces:check",
-        "phpstan": "@composer --working-dir=.. phpstan",
-        "phpstan:changed": "@composer --working-dir=.. phpstan:changed"
+        "format": "@composer --working-dir=.. format:pure-php",
+        "format:check": "@composer --working-dir=.. format:check:pure-php",
+        "format:changed": "@composer --working-dir=.. format:changed:pure-php",
+        "format:changed:check": "@composer --working-dir=.. format:changed:check:pure-php",
+        "spaces:check": "@composer --working-dir=.. spaces:check:pure-php",
+        "phpstan": "@composer --working-dir=.. phpstan:pure-php",
+        "phpstan:changed": "@composer --working-dir=.. phpstan:changed:pure-php"
     },
     "config": {
         "sort-packages": true,

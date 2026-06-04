@@ -12,7 +12,7 @@ final class AuditHttp
     /** @param array<string, mixed> $extra */
     public static function merge(Request $request, array $extra = []): AuditRequestContext
     {
-        $actorId   = (string) (
+        $actorId = (string) (
             $extra['actor_id']
             ?? $extra['practitioner_id']
             ?? $extra['doctor_id']

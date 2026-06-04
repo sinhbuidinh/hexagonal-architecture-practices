@@ -36,18 +36,18 @@ final class AuditRecordBuilder
         $safeAfter  = $this->sanitizer->sanitize($afterState);
 
         return new ActionAudited(
-            action          : $action,
-            outcome         : $outcome,
-            metadata        : new AuditMetadata(
-                actorId         : $request->actorId,
-                actorRole       : $request->actorRole,
-                patientId       : $request->patientId,
-                actionType      : AuditActionType::fromAction($action),
-                ipAddress       : $request->ipAddress,
-                deviceId        : $request->deviceId,
-                beforeState     : $safeBefore,
-                afterState      : $safeAfter,
-                stateDiff       : $this->stateDiff->format($safeBefore, $safeAfter),
+            action  : $action,
+            outcome : $outcome,
+            metadata: new AuditMetadata(
+                actorId    : $request->actorId,
+                actorRole  : $request->actorRole,
+                patientId  : $request->patientId,
+                actionType : AuditActionType::fromAction($action),
+                ipAddress  : $request->ipAddress,
+                deviceId   : $request->deviceId,
+                beforeState: $safeBefore,
+                afterState : $safeAfter,
+                stateDiff  : $this->stateDiff->format($safeBefore, $safeAfter),
             ),
             occurredAt      : $occurredAt,
             exceptionClass  : $exceptionClass,
@@ -83,7 +83,7 @@ final class AuditRecordBuilder
     /** @param array<string, mixed> $data */
     private function snapshotFromData(array $data): array
     {
-        $allowed  = [
+        $allowed = [
             'doctor_id', 'patient_id', 'prescription_id', 'appointment_id',
             'practitioner_id', 'name', 'status', 'version', 'slots', 'available_slots',
             'expires_at', 'medication', 'dosage',

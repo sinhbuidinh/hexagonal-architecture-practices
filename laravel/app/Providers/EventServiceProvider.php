@@ -43,7 +43,6 @@ final class EventServiceProvider extends ServiceProvider
             dispatcher: $app->make(EventDispatcherPort::class),
             clock     : $app->make(ClockPort::class),
         ));
-
         $this->app->singleton(HttpActionRunner::class, static fn ($app) => new HttpActionRunner(
             exceptionHandler: $app->make(DomainExceptionHandler::class),
             dispatcher      : $app->make(EventDispatcherPort::class),

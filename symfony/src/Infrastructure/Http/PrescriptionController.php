@@ -67,9 +67,9 @@ final class PrescriptionController
     #[Route('/prescriptions/{prescriptionId}', name: 'prescription_update', methods: ['PUT'])]
     public function update(Request $request, string $prescriptionId): JsonResponse
     {
-        $data        = $request->toArray();
-        $actorRole   = (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician');
-        $audit       = AuditHttp::merge($request, ['actor_role' => $actorRole]);
+        $data      = $request->toArray();
+        $actorRole = (string) ($data['actor_role'] ?? $data['actor'] ?? 'Physician');
+        $audit     = AuditHttp::merge($request, ['actor_role' => $actorRole]);
 
         $beforeState = null;
         try {

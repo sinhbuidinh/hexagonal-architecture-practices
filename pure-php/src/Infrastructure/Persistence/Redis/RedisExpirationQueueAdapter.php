@@ -37,7 +37,7 @@ final class RedisExpirationQueueAdapter implements ExpirationQueuePort
 
     public function pollDue(\DateTimeImmutable $now, int $limit = 100): array
     {
-        $raw   = $this->redis->eval(
+        $raw = $this->redis->eval(
             $this->pollScript,
             2,
             $this->zsetKey,
@@ -50,14 +50,14 @@ final class RedisExpirationQueueAdapter implements ExpirationQueuePort
             return [];
         }
 
-        $items = [];
-        for ($i = 0; $i < count($raw); $i += 2) {
+        $items       = [];
+        for ($i       = 0; $i < count($raw); $i += 2) {
             $id          = (string) $raw[$i];
             $payloadJson = (string) ($raw[$i + 1] ?? '{}');
             /** @var array<string, mixed> $payload */
-            $payload     = json_decode($payloadJson, true, 512, JSON_THROW_ON_ERROR);
-            $score       = $this->inferExpiresAtFromPayload($payload, $now);
-            $items[]     = new ExpiringItem($id, $payload, $score);
+            $payload = json_decode($payloadJson, true, 512, JSON_THROW_ON_ERROR);
+            $score   = $this->inferExpiresAtFromPayload($payload, $now);
+            $items[] = new ExpiringItem($id, $payload, $score);
         }
 
         return $items;

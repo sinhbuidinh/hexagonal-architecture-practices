@@ -93,15 +93,17 @@ The monorepo uses [PHP-CS-Fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer) w
 **Indentation:** 4 spaces, no tabs (`.editorconfig`). PHP-CS-Fixer rule `indentation_type` enforces spaces in PHP; `composer spaces:check` fails if tabs appear in project sources.
 
 ```bash
-# From repo root (install once)
+# From repo root (install once) — all packages
 composer install
 composer format          # fix all app PHP under pure-php/, laravel/, symfony/
 composer format:check    # CI-style dry run
 composer spaces:check    # fail if any tab in project sources (excludes vendor/)
 composer spaces:fix      # expand tabs → 4 spaces (also runs after phpstan:baseline)
+composer phpstan         # all three stacks
 
-# Same commands from any package folder
-cd pure-php && composer format
+# From a package folder — that package only (delegates to root scoped scripts)
+cd laravel && composer format:check
+cd pure-php && composer phpstan
 ```
 
 ### Changed files only (fast local / PR checks)
@@ -110,14 +112,18 @@ By default **`SCOPE=worktree`** — unstaged + staged edits vs `HEAD` (what you 
 
 | Command | What it runs on |
 |---------|-----------------|
-| `composer format:changed` | Fix formatting on changed PHP only |
-| `composer format:changed:check` | Dry-run format on changed PHP |
-| `composer phpstan:changed` | PHPStan on changed PHP only (picks pure-php / laravel / symfony config per file) |
+| `composer format:changed` (root) | Changed PHP in any package |
+| `composer format:changed:check` (root) | Dry-run, all packages |
+| `composer phpstan:changed` (root) | Changed PHP (picks config per file) |
+| `cd laravel && composer format:changed` | Changed PHP under `laravel/` only |
 
 ```bash
-# Default: files you edited but have not committed yet
+# Default: files you edited but have not committed yet (root = all packages)
 composer format:changed
 composer phpstan:changed
+
+# Package folder = only that tree
+cd symfony && composer format:changed:check
 
 # Only staged files (pre-commit)
 SCOPE=staged composer format:changed
@@ -133,14 +139,15 @@ SCOPE=branch BASE=origin/main composer phpstan:changed
 
 Scripts: [`tools/format-changed.sh`](tools/format-changed.sh), [`tools/phpstan-changed.sh`](tools/phpstan-changed.sh). If nothing matches, they exit 0 with a short message.
 
-Config: [`.php-cs-fixer.dist.php`](.php-cs-fixer.dist.php) (PSR-12; aligned `=>`, `=`, multiline named-arg `:`).
+Config: [`.php-cs-fixer.dist.php`](.php-cs-fixer.dist.php) (PSR-12; aligned `=>`, consecutive-line `=`, multiline named-arg `:`).
 
 ### Static analysis (named arguments on multiline calls)
 
 Custom PHPStan rule **`hexagon.multilineCallRequiresNamedArguments`**: if a function/method/`new` call spans multiple lines, every argument must be named.
 
 ```bash
-composer phpstan              # pure-php + laravel + symfony
+composer phpstan              # all packages (root only)
+composer phpstan:laravel      # single stack (also via cd laravel && composer phpstan)
 composer phpstan:baseline     # refresh baselines after fixing violations
 ```
 

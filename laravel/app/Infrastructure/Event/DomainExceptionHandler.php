@@ -30,7 +30,8 @@ final class DomainExceptionHandler
         ?AuditRequestContext $auditRequest = null,
         ?array $beforeState = null,
     ): ?HttpErrorResponse {
-        $event      = new DomainExceptionOccurred($exception);
+        $event = new DomainExceptionOccurred($exception);
+
         $this->dispatcher->dispatch($event);
 
         $httpStatus = $event->response?->status;
@@ -39,7 +40,7 @@ final class DomainExceptionHandler
 
         $this->dispatcher->dispatch($this->auditRecordBuilder->buildAuditedEvent(
             action          : $action,
-            outcome         : AuditOutcome::Failure,
+            outcome         : AuditOutcome::FAILURE,
             request         : $request,
             occurredAt      : $this->clock->now(),
             beforeState     : $beforeState,

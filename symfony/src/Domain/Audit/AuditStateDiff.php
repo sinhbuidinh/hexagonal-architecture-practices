@@ -29,8 +29,8 @@ final class AuditStateDiff
         sort($keys);
 
         foreach ($keys as $key) {
-            $old     = $before[$key] ?? null;
-            $new     = $after[$key] ?? null;
+            $old = $before[$key] ?? null;
+            $new = $after[$key] ?? null;
             if ($old === $new) {
                 continue;
             }

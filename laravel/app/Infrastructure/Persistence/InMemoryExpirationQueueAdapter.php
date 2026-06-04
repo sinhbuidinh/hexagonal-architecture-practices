@@ -24,7 +24,7 @@ final class InMemoryExpirationQueueAdapter implements ExpirationQueuePort
 
     public function pollDue(\DateTimeImmutable $now, int $limit = 100): array
     {
-        $due    = [];
+        $due = [];
         foreach ($this->items as $id => $item) {
             if ($item->isDue($now)) {
                 $due[$id] = $item;

@@ -48,13 +48,13 @@
             "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
         ],
-        "format": "@composer --working-dir=.. format",
-        "format:check": "@composer --working-dir=.. format:check",
-        "format:changed": "@composer --working-dir=.. format:changed",
-        "format:changed:check": "@composer --working-dir=.. format:changed:check",
-        "spaces:check": "@composer --working-dir=.. spaces:check",
-        "phpstan": "@composer --working-dir=.. phpstan",
-        "phpstan:changed": "@composer --working-dir=.. phpstan:changed",
+        "format": "@composer --working-dir=.. format:laravel",
+        "format:check": "@composer --working-dir=.. format:check:laravel",
+        "format:changed": "@composer --working-dir=.. format:changed:laravel",
+        "format:changed:check": "@composer --working-dir=.. format:changed:check:laravel",
+        "spaces:check": "@composer --working-dir=.. spaces:check:laravel",
+        "phpstan": "@composer --working-dir=.. phpstan:laravel",
+        "phpstan:changed": "@composer --working-dir=.. phpstan:changed:laravel",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

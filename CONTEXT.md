@@ -49,7 +49,7 @@ Outbound: adapters implement ports.
 
 ## Code style
 
-Root: `composer format` / `format:check` — full tree. **`format:changed`** / **`phpstan:changed`** — git-changed PHP only (`SCOPE=worktree|staged|branch`, default `worktree`). PHP-CS-Fixer **PSR-12** (`.php-cs-fixer.dist.php`): aligned `=>`, `=` (by scope), multiline named-arg `:`, **4 spaces**. `composer spaces:check` — no tabs. `composer phpstan` — multiline calls/`new` ⇒ named args (`tools/phpstan/`; baseline `phpstan-baseline-*.neon`). Same from `pure-php/`, `laravel/`, or `symfony/`.
+Root `composer.json`: `format` / `format:check` / `phpstan` — **all** packages. From `pure-php/`, `laravel/`, or `symfony/`, the same script names run **that package only** (delegate to root `format:*:laravel`, `phpstan:laravel`, etc.). **`format:changed`** / **`phpstan:changed`** — git-changed PHP (`SCOPE=worktree|staged|branch`; package-scoped when run from a child folder). PHP-CS-Fixer **PSR-12** (`.php-cs-fixer.dist.php`): aligned `=>`, consecutive-line `=`, multiline named-arg `:`, **4 spaces**. `composer spaces:check` — no tabs (scoped per package from child folders).
 
 ## Cursor setup
 
