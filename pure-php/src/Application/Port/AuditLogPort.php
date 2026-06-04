@@ -11,5 +11,5 @@ interface AuditLogPort
     public function append(AuditLogEntry $entry): void;
 
     /** @return list<AuditLogEntry> */
-    public function listRecent(int $limit = 100): array;
+    public function listRecent(int $limit = 100, ?string $action = null, ?string $actorId = null): array;
 }

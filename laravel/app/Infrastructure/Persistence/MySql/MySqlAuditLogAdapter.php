@@ -33,13 +33,21 @@ final class MySqlAuditLogAdapter implements AuditLogPort
     }
 
     /** @return list<AuditLogEntry> */
-    public function listRecent(int $limit = 100): array
+    public function listRecent(int $limit = 100, ?string $action = null, ?string $actorId = null): array
     {
         if ($limit <= 0) {
             return [];
         }
 
-        $rows = DB::table('audit_logs')
+        $query = DB::table('audit_logs');
+        if ($action !== null) {
+            $query->where(column: 'action', operator: '=', value: $action);
+        }
+        if ($actorId !== null) {
+            $query->where(column: 'actor_id', operator: '=', value: $actorId);
+        }
+
+        $rows = $query
             ->orderByDesc(column: 'id')
             ->limit(value: $limit)
             ->get()

@@ -9,6 +9,7 @@ use App\Application\Port\ClockPort;
 use App\Application\Port\EventDispatcherPort;
 use App\Infrastructure\Event\DomainExceptionHandler;
 use App\Infrastructure\Event\Listener\AppointmentNotFoundExceptionListener;
+use App\Infrastructure\Event\Listener\AuditLogAccessDeniedExceptionListener;
 use App\Infrastructure\Event\Listener\BookableSlotNotFoundExceptionListener;
 use App\Infrastructure\Event\Listener\BookableSlotUnavailableExceptionListener;
 use App\Infrastructure\Event\Listener\ConcurrentUpdateExceptionListener;
@@ -42,6 +43,7 @@ final class EventServiceProvider extends ServiceProvider
                     new OverlappingBookableWindowExceptionListener(),
                     new ConcurrentUpdateExceptionListener(),
                     new UnauthorizedPrescriptionChangeExceptionListener(),
+                    new AuditLogAccessDeniedExceptionListener(),
                 ],
                 actionAuditedListeners: [new RecordAuditLogListener($app->make(AuditLogPort::class))],
             );

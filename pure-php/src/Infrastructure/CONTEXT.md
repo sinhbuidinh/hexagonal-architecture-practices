@@ -10,7 +10,7 @@ Implements ports. May use Domain + Application.
 | `PatientController` | POST `/patients` |
 | `AppointmentController` | GET `/appointments/bookable/{doctorId}`, POST `/availability` (`time_slots`), `/appointments` (`bookable_slot_id`), `.../cancel`, `.../confirm`, `/expiration/process` |
 | `PrescriptionController` | POST `/prescriptions`, GET/PUT `/prescriptions/{id}` |
-| `AuditLogController` | GET `/audit-logs?limit=` |
+| `AuditLogController` | GET `/audit-logs/{auditAction}?limit=` (Laravel: JWT role scope via `AuditLogAccessPolicy`) |
 
 PUT prescription: body `actor`, `expected_version`, fields. **409** = `ConcurrentUpdateException`.
 

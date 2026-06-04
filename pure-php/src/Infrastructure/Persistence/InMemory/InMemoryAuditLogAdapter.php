@@ -21,12 +21,26 @@ final class InMemoryAuditLogAdapter implements AuditLogPort
         $this->entries[] = $entry;
     }
 
-    public function listRecent(int $limit = 100): array
+    public function listRecent(int $limit = 100, ?string $action = null, ?string $actorId = null): array
     {
         if ($limit <= 0) {
             return [];
         }
 
-        return array_slice($this->entries, -$limit);
+        $entries = $this->entries;
+        if ($action !== null) {
+            $entries = array_values(array_filter(
+                $entries,
+                static fn (AuditLogEntry $entry): bool => $entry->action === $action,
+            ));
+        }
+        if ($actorId !== null) {
+            $entries = array_values(array_filter(
+                $entries,
+                static fn (AuditLogEntry $entry): bool => $entry->actorId === $actorId,
+            ));
+        }
+
+        return array_slice($entries, -$limit);
     }
 }

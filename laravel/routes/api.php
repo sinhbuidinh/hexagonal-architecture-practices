@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Audit\AuditActions;
 use App\Infrastructure\Http\AppointmentController;
 use App\Infrastructure\Http\AuditLogController;
 use App\Infrastructure\Http\DoctorController;
@@ -10,7 +11,8 @@ use App\Infrastructure\Http\PrescriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth.jwt')->group(function (): void {
-    Route::get('/audit-logs', [AuditLogController::class, 'index']);
+    Route::get('/audit-logs/{auditAction}', [AuditLogController::class, 'index'])
+        ->where('auditAction', AuditActions::routePattern());
 
     Route::post('/doctors', [DoctorController::class, 'create']);
     Route::get('/doctors/{doctorId}/appointment-settings', [DoctorController::class, 'getAppointmentSettings']);

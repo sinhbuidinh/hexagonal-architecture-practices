@@ -12,6 +12,7 @@ use App\Application\Doctor\Command\UpdateDoctorAppointmentSettings;
 use App\Application\Patient\Command\CreatePatient;
 use App\Application\Scheduling\Command\HoldAppointment;
 use App\Domain\Audit\AuditOutcome;
+use App\Domain\Shared\UserRole;
 use App\Infrastructure\Auth\JwtTokenIssuer;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -26,10 +27,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $users = [
-            ['name' => 'Dr Alice', 'email' => 'doctor@example.com', 'role' => 'doctor'],
-            ['name' => 'Receptionist Minh', 'email' => 'reception@example.com', 'role' => 'receptionist'],
-            ['name' => 'Pharmacist Bob', 'email' => 'pharmacist@example.com', 'role' => 'pharmacist'],
-            ['name' => 'Patient Carol', 'email' => 'patient@example.com', 'role' => 'patient'],
+            ['name' => 'Admin', 'email' => 'admin@example.com', 'role' => UserRole::ADMIN],
+            ['name' => 'Dr Alice', 'email' => 'doctor@example.com', 'role' => UserRole::DOCTOR],
+            ['name' => 'Receptionist Minh', 'email' => 'reception@example.com', 'role' => UserRole::RECEPTIONIST],
+            ['name' => 'Pharmacist Bob', 'email' => 'pharmacist@example.com', 'role' => UserRole::PHARMACIST],
+            ['name' => 'Patient Carol', 'email' => 'patient@example.com', 'role' => UserRole::PATIENT],
         ];
 
         $createdUsers = [];
@@ -41,15 +43,15 @@ class DatabaseSeeder extends Seeder
                 'name'     => $spec['name'],
                 'email'    => $spec['email'],
                 'password' => Hash::make('password'),
-                'role'     => $spec['role'],
+                'role'     => $spec['role']->value,
             ]);
 
             $jwt = $issuer->issueForUser($user);
 
-            $createdUsers[$spec['role']] = $user;
-            $jwtTokens[$spec['role']]    = $jwt;
+            $createdUsers[$spec['role']->value] = $user;
+            $jwtTokens[$spec['role']->value]    = $jwt;
 
-            $this->command?->info(sprintf('%s JWT: %s', $spec['role'], $jwt));
+            $this->command?->info(sprintf('%s JWT: %s', $spec['role']->value, $jwt));
         }
 
         $createDoctor   = app(CreateDoctor::class);
@@ -58,7 +60,7 @@ class DatabaseSeeder extends Seeder
 
         $drAlice = $createDoctor->execute(
             name                : 'Dr Alice Nguyen',
-            userId              : $createdUsers['doctor']->id,
+            userId              : $createdUsers[UserRole::DOCTOR->value]->id,
             specialties         : ['General Practice', 'Internal Medicine'],
             languages           : ['English', 'Vietnamese'],
             licenseNumber       : 'MD-10001',
@@ -108,7 +110,7 @@ class DatabaseSeeder extends Seeder
 
         $patientCarol = $createPatient->execute(
             name             : 'Patient Carol',
-            userId           : $createdUsers['patient']->id,
+            userId           : $createdUsers[UserRole::PATIENT->value]->id,
             preferredLanguage: 'Vietnamese',
             dateOfBirth      : '1990-05-15',
             phone            : '+84-555-0100',
@@ -136,8 +138,9 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->seedAuditLogs(
-            actorReceptionId: (string) $createdUsers['receptionist']->id,
-            actorPatientId  : (string) $createdUsers['patient']->id,
+            actorReceptionId: (string) $createdUsers[UserRole::RECEPTIONIST->value]->id,
+            actorDoctorId   : (string) $createdUsers[UserRole::DOCTOR->value]->id,
+            actorPatientId  : (string) $createdUsers[UserRole::PATIENT->value]->id,
             patientProfileId: $patientCarol['patient_id'],
             doctors         : [$drAlice, $drNeurology, $drAllDayClinic, $drBusy],
             sampleHold      : $sampleHold,
@@ -145,9 +148,10 @@ class DatabaseSeeder extends Seeder
 
         $this->printApiGuide(
             tokens: [
-                'patient'      => $jwtTokens['patient'],
-                'doctor'       => $jwtTokens['doctor'],
-                'receptionist' => $jwtTokens['receptionist'],
+                'admin'        => $jwtTokens[UserRole::ADMIN->value],
+                'patient'      => $jwtTokens[UserRole::PATIENT->value],
+                'doctor'       => $jwtTokens[UserRole::DOCTOR->value],
+                'receptionist' => $jwtTokens[UserRole::RECEPTIONIST->value],
             ],
             doctors: [
                 'dr_alice'      => $drAlice,
@@ -189,6 +193,7 @@ class DatabaseSeeder extends Seeder
      */
     private function seedAuditLogs(
         string $actorReceptionId,
+        string $actorDoctorId,
         string $actorPatientId,
         string $patientProfileId,
         array $doctors,
@@ -202,7 +207,7 @@ class DatabaseSeeder extends Seeder
                 'outcome'      => AuditOutcome::SUCCESS->value,
                 'occurred_at'  => $at,
                 'actor_id'     => $actorReceptionId,
-                'actor_role'   => 'Receptionist',
+                'actor_role'   => UserRole::RECEPTIONIST->value,
                 'patient_id'   => null,
                 'action_type'  => AuditActionType::fromAction(AuditActions::DOCTOR_CREATE),
                 'ip_address'   => '127.0.0.1',
@@ -215,7 +220,7 @@ class DatabaseSeeder extends Seeder
                 'outcome'      => AuditOutcome::SUCCESS->value,
                 'occurred_at'  => $at->copy()->addMinutes(5),
                 'actor_id'     => $actorReceptionId,
-                'actor_role'   => 'Receptionist',
+                'actor_role'   => UserRole::RECEPTIONIST->value,
                 'patient_id'   => null,
                 'action_type'  => AuditActionType::fromAction(AuditActions::DOCTOR_APPOINTMENT_SETTINGS_UPDATE),
                 'ip_address'   => '127.0.0.1',
@@ -228,7 +233,7 @@ class DatabaseSeeder extends Seeder
                 'outcome'      => AuditOutcome::SUCCESS->value,
                 'occurred_at'  => $at->copy()->addMinutes(10),
                 'actor_id'     => $actorReceptionId,
-                'actor_role'   => 'Receptionist',
+                'actor_role'   => UserRole::RECEPTIONIST->value,
                 'patient_id'   => $patientProfileId,
                 'action_type'  => AuditActionType::fromAction(AuditActions::PATIENT_CREATE),
                 'ip_address'   => '127.0.0.1',
@@ -237,11 +242,24 @@ class DatabaseSeeder extends Seeder
                 'http_status'  => 201,
             ],
             [
+                'action'       => AuditActions::PRESCRIPTION_CREATE,
+                'outcome'      => AuditOutcome::SUCCESS->value,
+                'occurred_at'  => $at->copy()->addMinutes(15),
+                'actor_id'     => $actorDoctorId,
+                'actor_role'   => UserRole::DOCTOR->value,
+                'patient_id'   => $patientProfileId,
+                'action_type'  => AuditActionType::fromAction(AuditActions::PRESCRIPTION_CREATE),
+                'ip_address'   => '127.0.0.1',
+                'device_id'    => 'seed-cli',
+                'after_state'  => json_encode(['patient_id' => $patientProfileId, 'medication' => 'seed-rx'], JSON_THROW_ON_ERROR),
+                'http_status'  => 201,
+            ],
+            [
                 'action'       => AuditActions::APPOINTMENTS_LIST_BOOKABLE,
                 'outcome'      => AuditOutcome::SUCCESS->value,
                 'occurred_at'  => $at->copy()->addMinutes(20),
                 'actor_id'     => $actorPatientId,
-                'actor_role'   => 'Patient',
+                'actor_role'   => UserRole::PATIENT->value,
                 'patient_id'   => $patientProfileId,
                 'action_type'  => AuditActionType::fromAction(AuditActions::APPOINTMENTS_LIST_BOOKABLE),
                 'ip_address'   => '127.0.0.1',
@@ -257,7 +275,7 @@ class DatabaseSeeder extends Seeder
                 'outcome'      => AuditOutcome::SUCCESS->value,
                 'occurred_at'  => $at->copy()->addMinutes(25),
                 'actor_id'     => $actorPatientId,
-                'actor_role'   => 'Patient',
+                'actor_role'   => UserRole::PATIENT->value,
                 'patient_id'   => $patientProfileId,
                 'action_type'  => AuditActionType::fromAction(AuditActions::APPOINTMENT_HOLD),
                 'ip_address'   => '127.0.0.1',
@@ -273,7 +291,7 @@ class DatabaseSeeder extends Seeder
             'outcome'      => AuditOutcome::SUCCESS->value,
             'occurred_at'  => $at->copy()->addMinutes(30),
             'actor_id'     => $actorReceptionId,
-            'actor_role'   => 'Receptionist',
+            'actor_role'   => UserRole::RECEPTIONIST->value,
             'patient_id'   => null,
             'action_type'  => AuditActionType::fromAction(AuditActions::AUDIT_LIST),
             'ip_address'   => '127.0.0.1',
@@ -365,9 +383,14 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command->newLine();
-        $this->command->info('--- Audit trail ---');
-        $this->command->line("  GET {$base}/audit-logs?limit=50");
-        $this->command->line("    Header: {$auth($tokens['receptionist'])}");
+        $this->command->info('--- Audit trail (role-scoped; same action for compare) ---');
+        $auditListUrl = "{$base}/audit-logs/" . AuditActions::APPOINTMENT_HOLD . '?limit=50';
+        $this->command->line("  GET {$auditListUrl}");
+        $this->command->line("    Admin (all actors): {$auth($tokens['admin'])}");
+        $this->command->line('      → expect hold row(s) seeded for patient actor');
+        $this->command->line("    Doctor (own actor only): {$auth($tokens['doctor'])}");
+        $this->command->line('      → expect empty data[] (hold was performed by patient, not this doctor user)');
+        $this->command->line('  Receptionist/patient → 403 (no audit read permission)');
 
         $this->command->newLine();
         $this->command->info('--- Settings (optional) ---');
