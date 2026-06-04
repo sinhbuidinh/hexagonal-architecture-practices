@@ -77,11 +77,11 @@ final class AuditLogTest extends TestCase
             [new RecordAuditLogListener($auditLog)],
         );
 
-        (new CreateDoctor($doctors))->execute('dr-1', 'Dr One');
+        (new CreateDoctor($doctors))->execute(1, 'Dr One');
 
         $handler = new DomainExceptionHandler($dispatcher, $clock);
         $handler->handle(
-            new DoctorNotFoundException(new PractitionerId('missing')),
+            new DoctorNotFoundException(new PractitionerId(999)),
             AuditActions::AVAILABILITY_SET,
             new AuditRequestContext('reception_1', 'Receptionist', null, '10.0.0.8', 'desktop'),
         );

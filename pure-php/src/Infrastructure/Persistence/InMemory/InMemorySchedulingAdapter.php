@@ -15,7 +15,7 @@ use HexagonPractise\Domain\Shared\SlotCount;
 
 final class InMemorySchedulingAdapter implements SchedulingCommandPort, SchedulingQueryPort
 {
-    /** @var array<string, int> */
+    /** @var array<int, int> */
     private array $availability = [];
 
     /** @var array<string, AppointmentHold> */
@@ -31,20 +31,25 @@ final class InMemorySchedulingAdapter implements SchedulingCommandPort, Scheduli
         return new SlotCount($this->availability[$practitionerId->value] ?? 0);
     }
 
-    public function hold(AppointmentHold $hold): void
+    public function hold(AppointmentHold $hold): AppointmentHold
     {
-        $available = $this->availableSlots($hold->practitionerId);
-        if (!$available->isGreaterOrEqual($hold->slots)) {
-            throw new NoSlotsAvailableException(
-                practitionerId: $hold->practitionerId,
-                requested     : $hold->slots,
-                available     : $available,
-            );
+        if ($hold->bookableSlotId === null) {
+            $available = $this->availableSlots($hold->practitionerId);
+            if (!$available->isGreaterOrEqual($hold->slots)) {
+                throw new NoSlotsAvailableException(
+                    practitionerId: $hold->practitionerId,
+                    requested     : $hold->slots,
+                    available     : $available,
+                );
+            }
+
+            $key = $hold->practitionerId->value;
+            $this->availability[$key] = $available->subtract($hold->slots)->value;
         }
 
-        $key = $hold->practitionerId->value;
-        $this->availability[$key] = $available->subtract($hold->slots)->value;
         $this->holds[$hold->id->value] = $hold;
+
+        return $hold;
     }
 
     public function cancelHold(AppointmentId $appointmentId): void
@@ -54,8 +59,11 @@ final class InMemorySchedulingAdapter implements SchedulingCommandPort, Scheduli
             throw new AppointmentNotFoundException($appointmentId);
         }
 
-        $key = $hold->practitionerId->value;
-        $this->availability[$key] = ($this->availability[$key] ?? 0) + $hold->slots->value;
+        if ($hold->bookableSlotId === null) {
+            $key = $hold->practitionerId->value;
+            $this->availability[$key] = ($this->availability[$key] ?? 0) + $hold->slots->value;
+        }
+
         unset($this->holds[$appointmentId->value]);
     }
 

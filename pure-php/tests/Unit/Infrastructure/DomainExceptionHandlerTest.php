@@ -44,10 +44,10 @@ final class DomainExceptionHandlerTest extends TestCase
     public function testDispatchesToMatchingListener(): void
     {
         $response = $this->handler->handle(
-            new DoctorNotFoundException(new PractitionerId('dr-x')),
+            new DoctorNotFoundException(new PractitionerId(99)),
             'availability.set',
             new AuditRequestContext('user_dr_smith_882', 'Physician', null, '192.168.1.45', 'iPad'),
-            ['practitioner_id' => 'dr-x'],
+            ['practitioner_id' => 99],
         );
 
         $this->assertNotNull($response);

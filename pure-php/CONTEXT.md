@@ -17,7 +17,7 @@ USE_IN_MEMORY=1 composer serve          # HTTP :8080, no /api prefix
 | `public/index.php` | HTTP: `AppointmentController` → 404 → `PrescriptionController` |
 | `bin/console` | CLI commands |
 | `src/Bootstrap/Container.php` | Manual DI: picks InMemory vs Redis adapters |
-| `config/app.php` | Redis DSN + key prefixes |
+| `config/app.php` | Redis DSN, key prefixes, `CLINIC_LUNCH_BREAK_*` |
 
 ## Layout
 

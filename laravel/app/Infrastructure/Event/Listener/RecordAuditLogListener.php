@@ -23,7 +23,7 @@ final class RecordAuditLogListener implements ActionAuditedListener
         $meta = $event->metadata;
 
         $this->auditLog->append(new AuditLogEntry(
-            id              : bin2hex(random_bytes(8)),
+            id              : '',
             action          : $event->action,
             outcome         : $event->outcome,
             occurredAt      : $event->occurredAt,

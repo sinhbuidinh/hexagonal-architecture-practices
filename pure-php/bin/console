@@ -32,7 +32,7 @@ try {
 
 function runAvailabilitySet(Container $container, array $argv): void
 {
-    $container->setPractitionerAvailability->execute($argv[2] ?? '', (int) ($argv[3] ?? 0));
+    $container->setPractitionerAvailability->execute((int) ($argv[2] ?? 0), (int) ($argv[3] ?? 0));
     echo "Practitioner availability set.\n";
 }
 
@@ -40,7 +40,7 @@ function runAppointmentHold(Container $container, array $argv): void
 {
     $result = $container->holdAppointment->execute(
         $argv[2] ?? bin2hex(random_bytes(8)),
-        $argv[3] ?? '',
+        (int) ($argv[3] ?? 0),
         $argv[4] ?? '',
         (int) ($argv[5] ?? 1),
         new \DateTimeImmutable($argv[6] ?? '+15 minutes'),

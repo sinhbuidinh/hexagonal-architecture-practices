@@ -14,11 +14,14 @@ composer install && php artisan serve
 | File | Binds |
 |------|-------|
 | `bootstrap/providers.php` | `AppointmentServiceProvider`, `PrescriptionServiceProvider` |
-| `app/Providers/AppointmentServiceProvider.php` | Scheduling + Expiration + Clock ports → InMemory |
-| `app/Providers/AuditServiceProvider.php` | `AuditLogPort` → InMemory |
-| `app/Providers/CatalogServiceProvider.php` | doctor/patient command/query ports → InMemory |
-| `app/Providers/PrescriptionServiceProvider.php` | `PrescriptionCommandPort` / `PrescriptionQueryPort` → InMemory |
-| `routes/api.php` | All HTTP routes |
+| `config/hexagon.php` | `BOOKABLE_SLOT_HORIZON_DAYS`, `CLINIC_LUNCH_BREAK_*` (global lunch gap for slot generation) |
+| `app/Providers/AppointmentServiceProvider.php` | Scheduling + bookable slots + appointment settings → MySql |
+| `routes/console.php` | `hexagon:materialize-bookable-slots` daily 00:01 |
+| `app/Providers/AuditServiceProvider.php` | `AuditLogPort` → MySql |
+| `app/Providers/CatalogServiceProvider.php` | doctor/patient command/query ports → MySql |
+| `app/Providers/PrescriptionServiceProvider.php` | `PrescriptionCommandPort` / `PrescriptionQueryPort` → MySql |
+| `app/Providers/AuthServiceProvider.php` | Bearer token auth |
+| `routes/api.php` | All HTTP routes (require `Authorization: Bearer {userId}.{secret}`) |
 | `bootstrap/app.php` | Registers `routes/api.php` |
 
 ## Hexagon code

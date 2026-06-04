@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Http;
 
 use App\Application\Audit\AuditRequestContext;
+use App\Infrastructure\Auth\AuthenticatedUser;
+use App\Infrastructure\Http\Middleware\AuthenticateBearerToken;
 use Illuminate\Http\Request;
 
 final class AuditHttp
@@ -12,21 +14,19 @@ final class AuditHttp
     /** @param array<string, mixed> $extra */
     public static function merge(Request $request, array $extra = []): AuditRequestContext
     {
+        $user = $request->attributes->get(AuthenticateBearerToken::REQUEST_ATTRIBUTE);
+        $user = $user instanceof AuthenticatedUser ? $user : null;
+
         $actorId = (string) (
             $extra['actor_id']
             ?? $extra['practitioner_id']
             ?? $extra['doctor_id']
-            ?? $request->header('X-Actor-Id')
-            ?? $request->header('X-User-Id')
-            ?? $request->input('actor_id')
-            ?? $request->input('actor')
+            ?? ($user !== null ? $user->id : null)
             ?? 'system'
         );
         $actorRole = (string) (
             $extra['actor_role']
-            ?? $request->header('X-Actor-Role')
-            ?? $request->input('actor_role')
-            ?? $request->input('actor')
+            ?? ($user !== null ? $user->role->value : null)
             ?? 'System'
         );
         $patientId = isset($extra['patient_id']) && $extra['patient_id'] !== ''
@@ -40,6 +40,13 @@ final class AuditHttp
             ipAddress: $request->ip() ?? 'unknown',
             deviceId : (string) ($request->header('X-Device-Id') ?? $request->userAgent() ?? 'unknown'),
         );
+    }
+
+    public static function user(Request $request): ?AuthenticatedUser
+    {
+        $user = $request->attributes->get(AuthenticateBearerToken::REQUEST_ATTRIBUTE);
+
+        return $user instanceof AuthenticatedUser ? $user : null;
     }
 
     private static function nullableString(mixed $value): ?string

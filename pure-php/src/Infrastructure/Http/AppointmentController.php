@@ -19,11 +19,8 @@ final class AppointmentController
         $runner = $this->container->httpActionRunner;
 
         return match (true) {
-            $method === 'GET' && $path === '/appointments/bookable' => $runner->run(
-                fn () => ['data' => $this->container->listBookableAppointments->execute()],
-                AuditActions::APPOINTMENTS_LIST_BOOKABLE,
-                AuditRequestContext::fromHttpHints(),
-            ),
+            $method === 'GET' && preg_match('#^/appointments/bookable/(\d+)$#', $path, $m) === 1
+                => $this->listBookable($runner, (int) $m[1]),
             $method === 'POST' && $path === '/availability' => $this->setAvailability($runner, $body),
             $method === 'POST' && $path === '/appointments' => $this->hold($runner, $body),
             $method === 'POST' && preg_match('#^/appointments/([^/]+)/cancel$#', $path, $m) === 1
@@ -33,6 +30,16 @@ final class AppointmentController
             $method === 'POST' && $path === '/expiration/process' => $this->processExpiration($runner, $body),
             default                                               => ['status' => 404, 'error' => 'Not found'],
         };
+    }
+
+    /** @return array<string, mixed> */
+    private function listBookable(HttpActionRunner $runner, int $doctorId): array
+    {
+        return $runner->run(
+            fn () => ['data' => $this->container->listBookableAppointments->execute($doctorId)],
+            AuditActions::APPOINTMENTS_LIST_BOOKABLE,
+            AuditRequestContext::fromHttpHints(),
+        );
     }
 
     /** @return array<string, mixed> */
@@ -46,16 +53,16 @@ final class AppointmentController
 
         return $runner->run(
             function () use ($data): array {
-                $this->container->setPractitionerAvailability->execute(
-                    (string) ($data['practitioner_id'] ?? ''),
-                    (int) ($data['slots'] ?? 0),
+                $published = $this->container->publishBookableSlots->execute(
+                    (int) ($data['practitioner_id'] ?? 0),
+                    (array) ($data['time_slots'] ?? []),
                 );
 
-                return ['message' => 'availability_set'];
+                return ['message' => 'availability_set', 'data' => $published];
             },
             AuditActions::AVAILABILITY_SET,
             $audit,
-            beforeState: ['slots' => null, 'practitioner_id' => (string) ($data['practitioner_id'] ?? '')],
+            beforeState: ['practitioner_id' => (int) ($data['practitioner_id'] ?? 0)],
         );
     }
 
@@ -72,9 +79,9 @@ final class AppointmentController
             function () use ($data): array {
                 $result = $this->container->holdAppointment->execute(
                     (string) ($data['appointment_id'] ?? bin2hex(random_bytes(8))),
-                    (string) ($data['practitioner_id'] ?? ''),
+                    (int) ($data['practitioner_id'] ?? 0),
                     (string) ($data['patient_id'] ?? ''),
-                    (int) ($data['slots'] ?? 1),
+                    (int) ($data['bookable_slot_id'] ?? 0),
                     new \DateTimeImmutable((string) ($data['expires_at'] ?? '+15 minutes')),
                 );
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Scheduling\Command;
 
+use App\Application\Port\BookableSlotQueryPort;
 use App\Application\Port\DoctorQueryPort;
 use App\Application\Port\ExpirationQueuePort;
 use App\Application\Port\PatientQueryPort;
@@ -12,7 +13,10 @@ use App\Domain\Doctor\DoctorNotFoundException;
 use App\Domain\Expiration\ExpiringItem;
 use App\Domain\Patient\PatientNotFoundException;
 use App\Domain\Scheduling\AppointmentHold;
+use App\Domain\Scheduling\BookableSlotNotFoundException;
+use App\Domain\Scheduling\BookableSlotUnavailableException;
 use App\Domain\Shared\AppointmentId;
+use App\Domain\Shared\BookableSlotId;
 use App\Domain\Shared\PatientId;
 use App\Domain\Shared\PractitionerId;
 use App\Domain\Shared\SlotCount;
@@ -21,6 +25,7 @@ final readonly class HoldAppointment
 {
     public function __construct(
         private SchedulingCommandPort $scheduling,
+        private BookableSlotQueryPort $bookableSlotQueries,
         private ExpirationQueuePort $expirationQueue,
         private DoctorQueryPort $doctors,
         private PatientQueryPort $patients,
@@ -28,13 +33,12 @@ final readonly class HoldAppointment
     }
 
     /**
-     * @return array{appointment_id: string, practitioner_id: string, patient_id: string, slots: int, expires_at: string}
+     * @return array{appointment_id: string, practitioner_id: int, patient_id: string, bookable_slot_id: int, date: string, start_time: string, end_time: string, expires_at: string}
      */
     public function execute(
-        string $appointmentId,
-        string $practitionerId,
+        int $practitionerId,
         string $patientId,
-        int $slots,
+        int $bookableSlotId,
         \DateTimeImmutable $expiresAt,
     ): array {
         $practitioner = new PractitionerId($practitionerId);
@@ -47,15 +51,30 @@ final readonly class HoldAppointment
             throw new PatientNotFoundException($patient);
         }
 
-        $hold = new AppointmentHold(
-            id            : new AppointmentId($appointmentId),
+        $slotId = new BookableSlotId($bookableSlotId);
+        $slot   = $this->bookableSlotQueries->find($slotId);
+        if ($slot === null) {
+            throw new BookableSlotNotFoundException($slotId);
+        }
+
+        if ($slot->practitionerId->value !== $practitionerId) {
+            throw new BookableSlotUnavailableException($slotId, $slot->status);
+        }
+
+        if (!$slot->isAvailable()) {
+            throw new BookableSlotUnavailableException($slotId, $slot->status);
+        }
+
+        $stored = $this->scheduling->hold(new AppointmentHold(
+            id            : new AppointmentId('pending'),
             practitionerId: $practitioner,
             patientId     : $patient,
-            slots         : new SlotCount($slots),
+            slots         : new SlotCount(1),
             expiresAt     : $expiresAt,
-        );
+            bookableSlotId: $slotId,
+        ));
 
-        $this->scheduling->hold($hold);
+        $appointmentId = $stored->id->value;
 
         $this->expirationQueue->schedule(new ExpiringItem(
             id       : 'appointment:' . $appointmentId,
@@ -68,11 +87,14 @@ final readonly class HoldAppointment
         ));
 
         return [
-            'appointment_id'  => $appointmentId,
-            'practitioner_id' => $practitionerId,
-            'patient_id'      => $patientId,
-            'slots'           => $slots,
-            'expires_at'      => $expiresAt->format(\DateTimeInterface::ATOM),
+            'appointment_id'   => $appointmentId,
+            'practitioner_id'  => $practitionerId,
+            'patient_id'       => $patientId,
+            'bookable_slot_id' => $bookableSlotId,
+            'date'             => $slot->date,
+            'start_time'       => $slot->startTime,
+            'end_time'         => $slot->endTime,
+            'expires_at'       => $expiresAt->format(\DateTimeInterface::ATOM),
         ];
     }
 }

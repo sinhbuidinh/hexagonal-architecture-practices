@@ -18,7 +18,7 @@ final readonly class SetPractitionerAvailability
     ) {
     }
 
-    public function execute(string $practitionerId, int $slots): void
+    public function execute(int $practitionerId, int $slots): void
     {
         $id = new PractitionerId($practitionerId);
         if ($this->doctors->find($id) === null) {

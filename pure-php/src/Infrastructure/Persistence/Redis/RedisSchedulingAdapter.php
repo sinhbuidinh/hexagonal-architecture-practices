@@ -43,7 +43,7 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
         return new SlotCount((int) ($value ?? 0));
     }
 
-    public function hold(AppointmentHold $hold): void
+    public function hold(AppointmentHold $hold): AppointmentHold
     {
         $result = $this->redis->eval(
             $this->holdScript,
@@ -51,7 +51,7 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
             $this->slotsKey($hold->practitionerId),
             $this->appointmentKey($hold->id),
             (string) $hold->slots->value,
-            $hold->practitionerId->value,
+            (string) $hold->practitionerId->value,
             $hold->patientId->value,
             $hold->expiresAt->format(\DateTimeInterface::ATOM),
         );
@@ -64,6 +64,8 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
                 available     : $available,
             );
         }
+
+        return $hold;
     }
 
     public function cancelHold(AppointmentId $appointmentId): void
@@ -107,7 +109,7 @@ final class RedisSchedulingAdapter implements SchedulingCommandPort, SchedulingQ
 
         return new AppointmentHold(
             id            : $appointmentId,
-            practitionerId: new PractitionerId($data['practitioner_id']),
+            practitionerId: new PractitionerId((int) $data['practitioner_id']),
             patientId     : new PatientId($data['patient_id']),
             slots         : new SlotCount((int) $data['slots']),
             expiresAt     : new \DateTimeImmutable($data['expires_at']),

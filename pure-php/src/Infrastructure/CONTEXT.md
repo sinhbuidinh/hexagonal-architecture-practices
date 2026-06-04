@@ -8,7 +8,7 @@ Implements ports. May use Domain + Application.
 |------------|-------------------|
 | `DoctorController` | POST `/doctors` |
 | `PatientController` | POST `/patients` |
-| `AppointmentController` | GET `/appointments/bookable`, POST `/availability`, `/appointments`, `.../cancel`, `.../confirm`, `/expiration/process` |
+| `AppointmentController` | GET `/appointments/bookable/{doctorId}`, POST `/availability` (`time_slots`), `/appointments` (`bookable_slot_id`), `.../cancel`, `.../confirm`, `/expiration/process` |
 | `PrescriptionController` | POST `/prescriptions`, GET/PUT `/prescriptions/{id}` |
 | `AuditLogController` | GET `/audit-logs?limit=` |
 

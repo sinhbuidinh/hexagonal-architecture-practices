@@ -19,7 +19,8 @@ Application/
   Expiration/      ProcessExpiredItems
 Infrastructure/
   Http/            Doctor, Patient, Appointment, Prescription controllers
-  Persistence/InMemory/   Doctor, Patient, Scheduling, Expiration, Prescription adapters
+  Persistence/MySql/    Doctor, Patient, Scheduling, Expiration, Prescription, Audit adapters
+  Persistence/InMemory/   legacy in-memory adapters (not wired by default)
   Clock/           SystemClock, FrozenClock
 Providers/         DI; EventServiceProvider (exceptions + audit events), AuditServiceProvider
 ```

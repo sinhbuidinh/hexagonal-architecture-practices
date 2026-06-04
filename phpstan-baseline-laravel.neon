@@ -57,20 +57,8 @@ parameters:
         -
             message: '#^Multiline call must use named arguments for every parameter\.$#'
             identifier: hexagon.multilineCallRequiresNamedArguments
-            count: 2
-            path: laravel/app/Infrastructure/Http/DoctorController.php
-
-        -
-            message: '#^Multiline call must use named arguments for every parameter\.$#'
-            identifier: hexagon.multilineCallRequiresNamedArguments
             count: 1
             path: laravel/app/Infrastructure/Http/HttpActionRunner.php
-
-        -
-            message: '#^Multiline call must use named arguments for every parameter\.$#'
-            identifier: hexagon.multilineCallRequiresNamedArguments
-            count: 2
-            path: laravel/app/Infrastructure/Http/PatientController.php
 
         -
             message: '#^Multiline call must use named arguments for every parameter\.$#'

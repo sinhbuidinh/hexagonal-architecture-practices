@@ -21,7 +21,7 @@ interface SchedulingCommandPort
     /**
      * @throws NoSlotsAvailableException
      */
-    public function hold(AppointmentHold $hold): void;
+    public function hold(AppointmentHold $hold): AppointmentHold;
 
     /**
      * @throws AppointmentNotFoundException

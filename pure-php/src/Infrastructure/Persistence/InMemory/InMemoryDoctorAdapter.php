@@ -11,7 +11,7 @@ use HexagonPractise\Domain\Shared\PractitionerId;
 
 final class InMemoryDoctorAdapter implements DoctorCommandPort, DoctorQueryPort
 {
-    /** @var array<string, Doctor> */
+    /** @var array<int, Doctor> */
     private array $store = [];
 
     public function save(Doctor $doctor): void

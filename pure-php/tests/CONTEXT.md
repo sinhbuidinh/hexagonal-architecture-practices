@@ -9,6 +9,9 @@ PHPUnit; bootstrap `vendor/autoload.php`.
 | `Unit/Domain/SlotCountTest.php` | VO math |
 | `Unit/Application/HoldAndExpireTest.php` | Scheduling + expiry (InMemory) |
 | `Unit/Application/PrescriptionRaceTest.php` | Doctor wins version race; pharmacist retries |
+| `Unit/Infrastructure/ClinicLunchBreakFromConfigTest.php` | `CLINIC_LUNCH_BREAK_*` config parsing |
+| `Unit/Application/MaterializeBookableSlotsLunchBreakTest.php` | Materialized slots respect configured lunch gap |
+| `Unit/Domain/BookableSlotGeneratorTest.php` | Slot generation + lunch carve-out |
 
 ## Integration
 

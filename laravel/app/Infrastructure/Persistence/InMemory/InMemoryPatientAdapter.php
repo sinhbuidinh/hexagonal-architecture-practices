@@ -14,6 +14,29 @@ final class InMemoryPatientAdapter implements PatientCommandPort, PatientQueryPo
     /** @var array<string, Patient> */
     private array $store = [];
 
+    private int $nextId = 1;
+
+    public function create(
+        string $name,
+        ?int $userId = null,
+        ?string $preferredLanguage = null,
+        ?string $dateOfBirth = null,
+        ?string $phone = null,
+    ): Patient {
+        $patient = new Patient(
+            id                : new PatientId((string) $this->nextId),
+            name              : $name,
+            preferredLanguage : $preferredLanguage,
+            dateOfBirth       : $dateOfBirth,
+            phone             : $phone,
+            userId            : $userId,
+        );
+        $this->store[$patient->id->value] = $patient;
+        ++$this->nextId;
+
+        return $patient;
+    }
+
     public function save(Patient $patient): void
     {
         $this->store[$patient->id->value] = $patient;

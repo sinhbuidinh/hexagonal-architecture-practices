@@ -43,7 +43,7 @@ final class RedisSchedulingAdapterTest extends TestCase
 
     public function testAtomicHoldAndCancel(): void
     {
-        $practitioner = new PractitionerId('dr-' . bin2hex(random_bytes(4)));
+        $practitioner = new PractitionerId(random_int(1, 999_999));
         $this->adapter->setAvailability($practitioner, new SlotCount(5));
 
         $hold = new AppointmentHold(

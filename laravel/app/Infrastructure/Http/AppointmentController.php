@@ -10,7 +10,7 @@ use App\Application\Expiration\ProcessExpiredItems;
 use App\Application\Scheduling\Command\CancelAppointmentHold;
 use App\Application\Scheduling\Command\ConfirmAppointment;
 use App\Application\Scheduling\Command\HoldAppointment;
-use App\Application\Scheduling\Command\SetPractitionerAvailability;
+use App\Application\Scheduling\Command\PublishBookableSlots;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,7 +19,7 @@ final class AppointmentController
     public function __construct(
         private readonly HttpActionRunner $httpActionRunner,
         private readonly ListBookableAppointments $listBookableAppointments,
-        private readonly SetPractitionerAvailability $setPractitionerAvailability,
+        private readonly PublishBookableSlots $publishBookableSlots,
         private readonly HoldAppointment $holdAppointment,
         private readonly CancelAppointmentHold $cancelAppointmentHold,
         private readonly ConfirmAppointment $confirmAppointment,
@@ -27,10 +27,17 @@ final class AppointmentController
     ) {
     }
 
-    public function listBookable(Request $request): JsonResponse
+    public function listBookable(Request $request, int $doctorId): JsonResponse
     {
+        $dateFrom = $request->query('date_from');
+        $dateTo   = $request->query('date_to');
+
         return HttpPayload::toJsonResponse($this->httpActionRunner->run(
-            fn (): array => ['data' => $this->listBookableAppointments->execute()],
+            fn (): array => ['data' => $this->listBookableAppointments->execute(
+                $doctorId,
+                is_string($dateFrom) ? $dateFrom : null,
+                is_string($dateTo) ? $dateTo : null,
+            )],
             AuditActions::APPOINTMENTS_LIST_BOOKABLE,
             AuditHttp::merge($request),
         ));
@@ -38,22 +45,21 @@ final class AppointmentController
 
     public function setAvailability(Request $request): JsonResponse
     {
-        $audit = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
+        $audit = AuditHttp::merge($request);
 
         $payload = $this->httpActionRunner->run(
             function () use ($request): array {
-                $this->setPractitionerAvailability->execute(
-                    (string) $request->input('practitioner_id', ''),
-                    (int) $request->input('slots', 0),
+                $published = $this->publishBookableSlots->execute(
+                    (int) $request->input('practitioner_id', 0),
+                    (array) $request->input('time_slots', []),
                 );
 
-                return ['message' => 'availability_set'];
+                return ['message' => 'availability_set', 'data' => $published];
             },
             AuditActions::AVAILABILITY_SET,
             $audit,
             beforeState: [
-                'practitioner_id' => (string) $request->input('practitioner_id', ''),
-                'slots'           => null,
+                'practitioner_id' => (int) $request->input('practitioner_id', 0),
             ],
         );
 
@@ -62,15 +68,14 @@ final class AppointmentController
 
     public function hold(Request $request): JsonResponse
     {
-        $audit = AuditHttp::merge($request, ['actor_role' => 'Patient']);
+        $audit = AuditHttp::merge($request);
 
         $payload = $this->httpActionRunner->run(
             function () use ($request): array {
                 $data = $this->holdAppointment->execute(
-                    (string) $request->input('appointment_id', bin2hex(random_bytes(8))),
-                    (string) $request->input('practitioner_id', ''),
+                    (int) $request->input('practitioner_id', 0),
                     (string) $request->input('patient_id', ''),
-                    (int) $request->input('slots', 1),
+                    (int) $request->input('bookable_slot_id', 0),
                     new \DateTimeImmutable((string) $request->input('expires_at', '+15 minutes')),
                 );
 
@@ -87,7 +92,7 @@ final class AppointmentController
 
     public function cancel(Request $request, string $appointmentId): JsonResponse
     {
-        $audit = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
+        $audit = AuditHttp::merge($request);
 
         $payload = $this->httpActionRunner->run(
             function () use ($appointmentId): array {
@@ -105,7 +110,7 @@ final class AppointmentController
 
     public function confirm(Request $request, string $appointmentId): JsonResponse
     {
-        $audit = AuditHttp::merge($request, ['actor_role' => 'Receptionist']);
+        $audit = AuditHttp::merge($request);
 
         $payload = $this->httpActionRunner->run(
             function () use ($appointmentId): array {

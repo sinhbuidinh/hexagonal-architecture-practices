@@ -7,7 +7,9 @@ namespace HexagonPractise\Application\Audit;
 /** Stable action names for audit_log.action. */
 final class AuditActions
 {
-    public const DOCTOR_CREATE              = 'doctor.create';
+    public const DOCTOR_CREATE                      = 'doctor.create';
+    public const DOCTOR_APPOINTMENT_SETTINGS_GET    = 'doctor.appointment_settings.get';
+    public const DOCTOR_APPOINTMENT_SETTINGS_UPDATE = 'doctor.appointment_settings.update';
     public const PATIENT_CREATE             = 'patient.create';
     public const APPOINTMENTS_LIST_BOOKABLE = 'appointments.list_bookable';
     public const AVAILABILITY_SET           = 'availability.set';

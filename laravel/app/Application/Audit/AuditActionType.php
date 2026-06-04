@@ -10,7 +10,9 @@ final class AuditActionType
     public static function fromAction(string $action): string
     {
         return match ($action) {
-            AuditActions::DOCTOR_CREATE              => 'DOCTOR_CREATE',
+            AuditActions::DOCTOR_CREATE                      => 'DOCTOR_CREATE',
+            AuditActions::DOCTOR_APPOINTMENT_SETTINGS_GET    => 'DOCTOR_APPOINTMENT_SETTINGS_READ',
+            AuditActions::DOCTOR_APPOINTMENT_SETTINGS_UPDATE => 'DOCTOR_APPOINTMENT_SETTINGS_UPDATE',
             AuditActions::PATIENT_CREATE             => 'PATIENT_CREATE',
             AuditActions::APPOINTMENTS_LIST_BOOKABLE => 'APPOINTMENTS_LIST_BOOKABLE',
             AuditActions::AVAILABILITY_SET           => 'AVAILABILITY_SET',

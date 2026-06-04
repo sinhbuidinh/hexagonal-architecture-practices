@@ -9,10 +9,10 @@ use HexagonPractise\Application\Expiration\ProcessExpiredItems;
 use HexagonPractise\Application\Patient\Command\CreatePatient;
 use HexagonPractise\Application\Scheduling\Command\CancelAppointmentHold;
 use HexagonPractise\Application\Scheduling\Command\HoldAppointment;
-use HexagonPractise\Application\Scheduling\Command\SetPractitionerAvailability;
-use HexagonPractise\Domain\Scheduling\NoSlotsAvailableException;
-use HexagonPractise\Domain\Shared\PractitionerId;
+use HexagonPractise\Application\Scheduling\Command\PublishBookableSlots;
+use HexagonPractise\Domain\Scheduling\BookableSlotUnavailableException;
 use HexagonPractise\Infrastructure\Clock\FrozenClock;
+use HexagonPractise\Infrastructure\Persistence\InMemory\InMemoryBookableSlotAdapter;
 use HexagonPractise\Infrastructure\Persistence\InMemory\InMemoryDoctorAdapter;
 use HexagonPractise\Infrastructure\Persistence\InMemory\InMemoryExpirationQueueAdapter;
 use HexagonPractise\Infrastructure\Persistence\InMemory\InMemoryPatientAdapter;
@@ -22,74 +22,103 @@ use PHPUnit\Framework\TestCase;
 final class HoldAndExpireTest extends TestCase
 {
     private InMemorySchedulingAdapter $scheduling;
+    private InMemoryBookableSlotAdapter $bookableSlots;
     private InMemoryExpirationQueueAdapter $queue;
     private InMemoryDoctorAdapter $doctors;
     private InMemoryPatientAdapter $patients;
     private FrozenClock $clock;
+    private HoldAppointment $holdAppointment;
+    private CancelAppointmentHold $cancelAppointmentHold;
 
     protected function setUp(): void
     {
         $this->scheduling = new InMemorySchedulingAdapter();
+        $this->bookableSlots = new InMemoryBookableSlotAdapter();
         $this->queue = new InMemoryExpirationQueueAdapter();
         $this->doctors = new InMemoryDoctorAdapter();
         $this->patients = new InMemoryPatientAdapter();
         $this->clock = new FrozenClock(new \DateTimeImmutable('2026-06-03T10:00:00Z'));
 
-        (new CreateDoctor($this->doctors))->execute('dr-smith', 'Dr Smith');
+        (new CreateDoctor($this->doctors))->execute(1, 'Dr Smith');
         (new CreatePatient($this->patients))->execute('patient-42', 'Jane Doe');
-    }
 
-    public function testHoldReducesAvailableSlots(): void
-    {
-        (new SetPractitionerAvailability($this->scheduling, $this->doctors))->execute('dr-smith', 10);
+        (new PublishBookableSlots($this->bookableSlots, $this->doctors))->execute(1, [
+            ['date' => '2026-06-05', 'start_time' => '07:30', 'end_time' => '08:30'],
+            ['date' => '2026-06-05', 'start_time' => '08:30', 'end_time' => '09:30'],
+        ]);
 
-        (new HoldAppointment($this->scheduling, $this->queue, $this->doctors, $this->patients))->execute(
-            'apt-1',
-            'dr-smith',
-            'patient-42',
-            4,
-            $this->clock->now()->modify('+5 minutes'),
+        $this->holdAppointment = new HoldAppointment(
+            $this->scheduling,
+            $this->bookableSlots,
+            $this->bookableSlots,
+            $this->queue,
+            $this->doctors,
+            $this->patients,
         );
-
-        $this->assertSame(6, $this->scheduling->availableSlots(new PractitionerId('dr-smith'))->value);
-    }
-
-    public function testNoSlotsAvailableThrows(): void
-    {
-        (new SetPractitionerAvailability($this->scheduling, $this->doctors))->execute('dr-smith', 2);
-
-        $this->expectException(NoSlotsAvailableException::class);
-
-        (new HoldAppointment($this->scheduling, $this->queue, $this->doctors, $this->patients))->execute(
-            'apt-1',
-            'dr-smith',
-            'patient-42',
-            5,
-            $this->clock->now()->modify('+5 minutes'),
+        $this->cancelAppointmentHold = new CancelAppointmentHold(
+            $this->scheduling,
+            $this->scheduling,
+            $this->bookableSlots,
+            $this->queue,
         );
     }
 
-    public function testExpiredHoldReturnsSlots(): void
+    public function testHoldMarksSlotUnavailable(): void
     {
-        (new SetPractitionerAvailability($this->scheduling, $this->doctors))->execute('dr-smith', 10);
+        $this->holdAppointment->execute(
+            'apt-1',
+            1,
+            'patient-42',
+            1,
+            $this->clock->now()->modify('+5 minutes'),
+        );
 
+        $slots = $this->bookableSlots->listAvailable(new \HexagonPractise\Domain\Shared\PractitionerId(1));
+        $this->assertCount(1, $slots);
+        $this->assertSame(2, $slots[0]->id->value);
+    }
+
+    public function testUnavailableSlotThrows(): void
+    {
+        $this->holdAppointment->execute(
+            'apt-1',
+            1,
+            'patient-42',
+            1,
+            $this->clock->now()->modify('+5 minutes'),
+        );
+
+        $this->expectException(BookableSlotUnavailableException::class);
+
+        $this->holdAppointment->execute(
+            'apt-2',
+            1,
+            'patient-42',
+            1,
+            $this->clock->now()->modify('+5 minutes'),
+        );
+    }
+
+    public function testExpiredHoldReleasesSlot(): void
+    {
         $expiresAt = $this->clock->now()->modify('+1 minute');
-        (new HoldAppointment($this->scheduling, $this->queue, $this->doctors, $this->patients))->execute(
+        $this->holdAppointment->execute(
             'apt-expired',
-            'dr-smith',
+            1,
             'patient-42',
-            3,
+            1,
             $expiresAt,
         );
 
         $this->clock->set($expiresAt->modify('+1 second'));
 
-        $cancel    = new CancelAppointmentHold($this->scheduling, $this->queue);
-        $processor = new ProcessExpiredItems($this->queue, $cancel, $this->clock);
+        $processor = new ProcessExpiredItems($this->queue, $this->cancelAppointmentHold, $this->clock);
         $processed = $processor->execute();
 
         $this->assertCount(1, $processed);
         $this->assertSame('cancelled_appointment_hold', $processed[0]['action']);
-        $this->assertSame(10, $this->scheduling->availableSlots(new PractitionerId('dr-smith'))->value);
+
+        $slots = $this->bookableSlots->listAvailable(new \HexagonPractise\Domain\Shared\PractitionerId(1));
+        $this->assertCount(2, $slots);
     }
 }

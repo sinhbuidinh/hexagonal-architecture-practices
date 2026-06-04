@@ -11,8 +11,33 @@ use App\Domain\Shared\PractitionerId;
 
 final class InMemoryDoctorAdapter implements DoctorCommandPort, DoctorQueryPort
 {
-    /** @var array<string, Doctor> */
+    /** @var array<int, Doctor> */
     private array $store = [];
+
+    private int $nextId = 1;
+
+    public function create(
+        string $name,
+        ?int $userId = null,
+        array $specialties = [],
+        array $languages = [],
+        ?string $licenseNumber = null,
+        bool $acceptingNewPatients = true,
+    ): Doctor {
+        $doctor = new Doctor(
+            id                   : new PractitionerId($this->nextId),
+            name                 : $name,
+            specialties          : Doctor::normalizeStringList($specialties),
+            languages            : Doctor::normalizeStringList($languages),
+            licenseNumber        : $licenseNumber,
+            acceptingNewPatients : $acceptingNewPatients,
+            userId               : $userId,
+        );
+        $this->store[$doctor->id->value] = $doctor;
+        ++$this->nextId;
+
+        return $doctor;
+    }
 
     public function save(Doctor $doctor): void
     {

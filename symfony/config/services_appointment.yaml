@@ -1,8 +1,35 @@
+parameters:
+    hexagon.bookable_slot_horizon_days: 15
+    hexagon.clinic_lunch_break.enabled: true
+    hexagon.clinic_lunch_break.start: '12:00'
+    hexagon.clinic_lunch_break.end: '13:30'
+
 services:
     App\Infrastructure\Persistence\InMemory\InMemorySchedulingAdapter: ~
+    App\Infrastructure\Persistence\InMemory\InMemoryBookableSlotAdapter: ~
+    App\Infrastructure\Persistence\InMemory\InMemoryDoctorAppointmentSettingsAdapter: ~
 
     App\Application\Port\SchedulingCommandPort: '@App\Infrastructure\Persistence\InMemory\InMemorySchedulingAdapter'
     App\Application\Port\SchedulingQueryPort: '@App\Infrastructure\Persistence\InMemory\InMemorySchedulingAdapter'
+    App\Application\Port\BookableSlotCommandPort: '@App\Infrastructure\Persistence\InMemory\InMemoryBookableSlotAdapter'
+    App\Application\Port\BookableSlotQueryPort: '@App\Infrastructure\Persistence\InMemory\InMemoryBookableSlotAdapter'
+    App\Application\Port\DoctorAppointmentSettingsCommandPort: '@App\Infrastructure\Persistence\InMemory\InMemoryDoctorAppointmentSettingsAdapter'
+    App\Application\Port\DoctorAppointmentSettingsQueryPort: '@App\Infrastructure\Persistence\InMemory\InMemoryDoctorAppointmentSettingsAdapter'
+
+    App\Application\Port\BookableSlotHorizonPort:
+        class: App\Infrastructure\Scheduling\FixedBookableSlotHorizon
+        arguments:
+            $days: '%hexagon.bookable_slot_horizon_days%'
+
+    App\Application\Port\ClinicLunchBreakPort:
+        class: App\Infrastructure\Scheduling\ClinicLunchBreakFromConfig
+        arguments:
+            $enabled: '%hexagon.clinic_lunch_break.enabled%'
+            $startTime: '%hexagon.clinic_lunch_break.start%'
+            $endTime: '%hexagon.clinic_lunch_break.end%'
+
+    App\Domain\Scheduling\BookableSlotGenerator:
+        factory: ['@App\Infrastructure\Scheduling\BookableSlotGeneratorFactory', 'create']
 
     App\Application\Port\ExpirationQueuePort:
         class: App\Infrastructure\Persistence\InMemory\InMemoryExpirationQueueAdapter

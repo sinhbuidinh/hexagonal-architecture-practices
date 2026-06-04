@@ -6,10 +6,10 @@ namespace App\Domain\Shared;
 
 final readonly class PractitionerId
 {
-    public function __construct(public string $value)
+    public function __construct(public int $value)
     {
-        if ($value === '') {
-            throw new \InvalidArgumentException('PractitionerId cannot be empty.');
+        if ($value <= 0) {
+            throw new \InvalidArgumentException('PractitionerId must be a positive integer.');
         }
     }
 
@@ -20,6 +20,6 @@ final readonly class PractitionerId
 
     public function __toString(): string
     {
-        return $this->value;
+        return (string) $this->value;
     }
 }

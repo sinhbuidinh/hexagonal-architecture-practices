@@ -9,12 +9,40 @@ use App\Application\Port\PrescriptionQueryPort;
 use App\Domain\Prescription\ConcurrentUpdateException;
 use App\Domain\Prescription\Prescription;
 use App\Domain\Prescription\PrescriptionNotFoundException;
+use App\Domain\Prescription\PrescriptionStatus;
+use App\Domain\Shared\PatientId;
 use App\Domain\Shared\PrescriptionId;
 
 final class InMemoryPrescriptionAdapter implements PrescriptionCommandPort, PrescriptionQueryPort
 {
     /** @var array<string, Prescription> */
     private array $store = [];
+
+    private int $nextId = 1;
+
+    public function create(
+        PatientId $patientId,
+        string $medication,
+        string $dosage,
+        string $instructions,
+    ): Prescription {
+        $prescription = new Prescription(
+            id           : new PrescriptionId((string) $this->nextId),
+            patientId    : $patientId,
+            medication   : $medication,
+            dosage       : $dosage,
+            instructions : $instructions,
+            status       : PrescriptionStatus::DRAFT,
+            pharmacyNotes: '',
+            version      : 1,
+            lastUpdatedBy: null,
+        );
+
+        $this->store[$prescription->id->value] = $prescription;
+        ++$this->nextId;
+
+        return $prescription;
+    }
 
     public function save(Prescription $prescription): void
     {

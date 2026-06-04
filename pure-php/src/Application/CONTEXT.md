@@ -16,6 +16,9 @@ Use cases depend on **Domain** + **Port** interfaces only. **CQRS**: writes use 
 | `PrescriptionCommandPort` | InMemory, Redis+Lua | save, `updateIfVersionMatches` |
 | `PrescriptionQueryPort` | same adapter | find by id |
 | `DoctorCommandPort` / `DoctorQueryPort` | InMemory | register + list doctors |
+| `DoctorAppointmentSettingsCommandPort` / `DoctorAppointmentSettingsQueryPort` | InMemory, MySql (Laravel) | weekly hours, slot duration, timezone |
+| `BookableSlotHorizonPort` | Fixed, config (Laravel) | rolling window days (default 15) |
+| `ClinicLunchBreakPort` | config (`CLINIC_LUNCH_BREAK_*`) | global lunch gap carved out of generated slots (default 12:00–13:30) |
 | `PatientCommandPort` / `PatientQueryPort` | InMemory | register patients |
 | `ClockPort` | System, Frozen | Injectable time (tests) |
 | `AuditLogPort` | InMemory | append + listRecent |
@@ -26,7 +29,12 @@ Use cases depend on **Domain** + **Port** interfaces only. **CQRS**: writes use 
 |-------|-------|
 | `Doctor/Command/CreateDoctor` | `DoctorCommandPort` |
 | `Patient/Command/CreatePatient` | `PatientCommandPort` |
-| `Booking/Query/ListBookableAppointments` | `DoctorQueryPort` + `SchedulingQueryPort` (slots > 0) |
+| `Booking/Query/ListBookableAppointments` | `DoctorQueryPort` + `BookableSlotQueryPort` (per-doctor date/time windows) |
+| `Scheduling/Command/PublishBookableSlots` | `BookableSlotCommandPort` — manual `time_slots[]` overrides |
+| `Scheduling/Command/MaterializeBookableSlots` | settings + generator + `publishMany` / `deleteAvailableStartingAfter` (rolling horizon) |
+| `Scheduling/Command/MaterializeBookableSlotsForAllDoctors` | daily cron / batch |
+| `Doctor/Command/UpdateDoctorAppointmentSettings` | save settings → re-materialize future available slots |
+| `Doctor/Query/GetDoctorAppointmentSettings` | read weekly rules |
 
 `SetPractitionerAvailability` and `HoldAppointment` require registered doctor/patient.
 

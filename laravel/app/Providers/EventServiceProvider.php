@@ -9,7 +9,11 @@ use App\Application\Port\ClockPort;
 use App\Application\Port\EventDispatcherPort;
 use App\Infrastructure\Event\DomainExceptionHandler;
 use App\Infrastructure\Event\Listener\AppointmentNotFoundExceptionListener;
+use App\Infrastructure\Event\Listener\BookableSlotNotFoundExceptionListener;
+use App\Infrastructure\Event\Listener\BookableSlotUnavailableExceptionListener;
+use App\Infrastructure\Event\Listener\OverlappingBookableWindowExceptionListener;
 use App\Infrastructure\Event\Listener\ConcurrentUpdateExceptionListener;
+use App\Infrastructure\Event\Listener\DoctorAppointmentSettingsNotFoundExceptionListener;
 use App\Infrastructure\Event\Listener\DoctorNotFoundExceptionListener;
 use App\Infrastructure\Event\Listener\NoSlotsAvailableExceptionListener;
 use App\Infrastructure\Event\Listener\PatientNotFoundExceptionListener;
@@ -28,10 +32,14 @@ final class EventServiceProvider extends ServiceProvider
             return new SyncEventDispatcher(
                 exceptionListeners    : [
                     new DoctorNotFoundExceptionListener(),
+                    new DoctorAppointmentSettingsNotFoundExceptionListener(),
                     new PatientNotFoundExceptionListener(),
                     new PrescriptionNotFoundExceptionListener(),
                     new AppointmentNotFoundExceptionListener(),
                     new NoSlotsAvailableExceptionListener(),
+                    new BookableSlotNotFoundExceptionListener(),
+                    new BookableSlotUnavailableExceptionListener(),
+                    new OverlappingBookableWindowExceptionListener(),
                     new ConcurrentUpdateExceptionListener(),
                     new UnauthorizedPrescriptionChangeExceptionListener(),
                 ],

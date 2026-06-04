@@ -6,10 +6,14 @@ services:
             tags: ['hexagon.action_audited_listener']
 
     App\Infrastructure\Event\Listener\DoctorNotFoundExceptionListener: ~
+    App\Infrastructure\Event\Listener\DoctorAppointmentSettingsNotFoundExceptionListener: ~
     App\Infrastructure\Event\Listener\PatientNotFoundExceptionListener: ~
     App\Infrastructure\Event\Listener\PrescriptionNotFoundExceptionListener: ~
     App\Infrastructure\Event\Listener\AppointmentNotFoundExceptionListener: ~
     App\Infrastructure\Event\Listener\NoSlotsAvailableExceptionListener: ~
+    App\Infrastructure\Event\Listener\BookableSlotNotFoundExceptionListener: ~
+    App\Infrastructure\Event\Listener\BookableSlotUnavailableExceptionListener: ~
+    App\Infrastructure\Event\Listener\OverlappingBookableWindowExceptionListener: ~
     App\Infrastructure\Event\Listener\ConcurrentUpdateExceptionListener: ~
     App\Infrastructure\Event\Listener\UnauthorizedPrescriptionChangeExceptionListener: ~
     App\Infrastructure\Event\Listener\RecordAuditLogListener: ~

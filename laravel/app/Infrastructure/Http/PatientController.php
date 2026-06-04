@@ -19,23 +19,22 @@ final class PatientController
 
     public function create(Request $request): JsonResponse
     {
-        $patientId = (string) $request->input('patient_id', bin2hex(random_bytes(8)));
-        $audit     = AuditHttp::merge($request, [
-            'patient_id' => $patientId,
-            'actor_role' => 'Patient',
-        ]);
+        $audit = AuditHttp::merge($request);
 
         $payload = $this->httpActionRunner->run(
-            function () use ($request, $patientId): array {
+            action       : function () use ($request): array {
                 $data = $this->createPatient->execute(
-                    $patientId,
-                    (string) $request->input('name', ''),
+                    name              : (string) $request->input('name', ''),
+                    userId            : $request->filled('user_id') ? (int) $request->input('user_id') : null,
+                    preferredLanguage : $request->filled('preferred_language') ? (string) $request->input('preferred_language') : null,
+                    dateOfBirth       : $request->filled('date_of_birth') ? (string) $request->input('date_of_birth') : null,
+                    phone             : $request->filled('phone') ? (string) $request->input('phone') : null,
                 );
 
                 return ['data' => $data];
             },
-            AuditActions::PATIENT_CREATE,
-            $audit,
+            auditAction  : AuditActions::PATIENT_CREATE,
+            auditRequest : $audit,
             successStatus: 201,
         );
 

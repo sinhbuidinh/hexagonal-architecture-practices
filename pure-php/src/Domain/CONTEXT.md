@@ -31,7 +31,7 @@ No imports from Application/Infrastructure/framework.
 
 | Class | Meaning |
 |-------|---------|
-| `PractitionerId` | Clinician / schedule resource (same id as `Doctor`) |
+| `PractitionerId` | Clinician / schedule resource (same id as `Doctor`; positive int) |
 | `PatientId` | Person receiving care |
 | `AppointmentId` | Appointment hold id |
 | `PrescriptionId` | Prescription id |

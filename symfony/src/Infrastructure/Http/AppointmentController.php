@@ -10,7 +10,7 @@ use App\Application\Expiration\ProcessExpiredItems;
 use App\Application\Scheduling\Command\CancelAppointmentHold;
 use App\Application\Scheduling\Command\ConfirmAppointment;
 use App\Application\Scheduling\Command\HoldAppointment;
-use App\Application\Scheduling\Command\SetPractitionerAvailability;
+use App\Application\Scheduling\Command\PublishBookableSlots;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,7 +21,7 @@ final class AppointmentController
     public function __construct(
         private readonly HttpActionRunner $httpActionRunner,
         private readonly ListBookableAppointments $listBookableAppointments,
-        private readonly SetPractitionerAvailability $setPractitionerAvailability,
+        private readonly PublishBookableSlots $publishBookableSlots,
         private readonly HoldAppointment $holdAppointment,
         private readonly CancelAppointmentHold $cancelAppointmentHold,
         private readonly ConfirmAppointment $confirmAppointment,
@@ -29,11 +29,18 @@ final class AppointmentController
     ) {
     }
 
-    #[Route('/appointments/bookable', name: 'appointments_bookable', methods: ['GET'])]
-    public function listBookable(Request $request): JsonResponse
+    #[Route('/appointments/bookable/{doctorId}', name: 'appointments_bookable', methods: ['GET'], requirements: ['doctorId' => '\d+'])]
+    public function listBookable(Request $request, int $doctorId): JsonResponse
     {
+        $dateFrom = $request->query->get('date_from');
+        $dateTo   = $request->query->get('date_to');
+
         return $this->httpActionRunner->run(
-            fn () => new JsonResponse(['data' => $this->listBookableAppointments->execute()]),
+            fn () => new JsonResponse(['data' => $this->listBookableAppointments->execute(
+                $doctorId,
+                is_string($dateFrom) ? $dateFrom : null,
+                is_string($dateTo) ? $dateTo : null,
+            )]),
             AuditActions::APPOINTMENTS_LIST_BOOKABLE,
             AuditHttp::merge($request),
         );
@@ -47,18 +54,17 @@ final class AppointmentController
 
         return $this->httpActionRunner->run(
             function () use ($data): JsonResponse {
-                $this->setPractitionerAvailability->execute(
-                    (string) ($data['practitioner_id'] ?? ''),
-                    (int) ($data['slots'] ?? 0),
+                $published = $this->publishBookableSlots->execute(
+                    (int) ($data['practitioner_id'] ?? 0),
+                    (array) ($data['time_slots'] ?? []),
                 );
 
-                return new JsonResponse(['message' => 'availability_set']);
+                return new JsonResponse(['message' => 'availability_set', 'data' => $published]);
             },
             AuditActions::AVAILABILITY_SET,
             $audit,
             beforeState: [
-                'practitioner_id' => (string) ($data['practitioner_id'] ?? ''),
-                'slots'           => null,
+                'practitioner_id' => (int) ($data['practitioner_id'] ?? 0),
             ],
         );
     }
@@ -72,10 +78,9 @@ final class AppointmentController
         return $this->httpActionRunner->run(
             function () use ($data): JsonResponse {
                 $result = $this->holdAppointment->execute(
-                    (string) ($data['appointment_id'] ?? bin2hex(random_bytes(8))),
-                    (string) ($data['practitioner_id'] ?? ''),
+                    (int) ($data['practitioner_id'] ?? 0),
                     (string) ($data['patient_id'] ?? ''),
-                    (int) ($data['slots'] ?? 1),
+                    (int) ($data['bookable_slot_id'] ?? 0),
                     new \DateTimeImmutable((string) ($data['expires_at'] ?? '+15 minutes')),
                 );
 
