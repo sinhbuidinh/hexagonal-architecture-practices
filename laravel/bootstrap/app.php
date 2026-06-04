@@ -2,7 +2,7 @@
 
 use App\Infrastructure\Event\DomainExceptionHandler;
 use App\Infrastructure\Http\AuditHttp;
-use App\Infrastructure\Http\Middleware\AuthenticateBearerToken;
+use App\Infrastructure\Http\Middleware\AuthenticateJwt;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'auth.bearer' => AuthenticateBearerToken::class,
+            'auth.jwt' => AuthenticateJwt::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

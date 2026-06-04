@@ -6,7 +6,7 @@ namespace App\Infrastructure\Http;
 
 use App\Application\Audit\AuditRequestContext;
 use App\Infrastructure\Auth\AuthenticatedUser;
-use App\Infrastructure\Http\Middleware\AuthenticateBearerToken;
+use App\Infrastructure\Http\Middleware\AuthenticateJwt;
 use Illuminate\Http\Request;
 
 final class AuditHttp
@@ -14,7 +14,7 @@ final class AuditHttp
     /** @param array<string, mixed> $extra */
     public static function merge(Request $request, array $extra = []): AuditRequestContext
     {
-        $user = $request->attributes->get(AuthenticateBearerToken::REQUEST_ATTRIBUTE);
+        $user = $request->attributes->get(AuthenticateJwt::REQUEST_ATTRIBUTE);
         $user = $user instanceof AuthenticatedUser ? $user : null;
 
         $actorId = (string) (
@@ -44,7 +44,7 @@ final class AuditHttp
 
     public static function user(Request $request): ?AuthenticatedUser
     {
-        $user = $request->attributes->get(AuthenticateBearerToken::REQUEST_ATTRIBUTE);
+        $user = $request->attributes->get(AuthenticateJwt::REQUEST_ATTRIBUTE);
 
         return $user instanceof AuthenticatedUser ? $user : null;
     }

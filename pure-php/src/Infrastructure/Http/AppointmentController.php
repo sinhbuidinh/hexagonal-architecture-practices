@@ -20,7 +20,7 @@ final class AppointmentController
 
         return match (true) {
             $method === 'GET' && preg_match('#^/appointments/bookable/(\d+)$#', $path, $m) === 1
-                => $this->listBookable($runner, (int) $m[1]),
+                                                            => $this->listBookable($runner, (int) $m[1]),
             $method === 'POST' && $path === '/availability' => $this->setAvailability($runner, $body),
             $method === 'POST' && $path === '/appointments' => $this->hold($runner, $body),
             $method === 'POST' && preg_match('#^/appointments/([^/]+)/cancel$#', $path, $m) === 1

@@ -29,10 +29,10 @@ final class DoctorController
             action: function () use ($request): array {
                 $data = $this->createDoctor->execute(
                     name                : (string) $request->input('name', ''),
-                    userId              : $request->filled('user_id') ? (int) $request->input('user_id')                 : null,
-                    specialties         : is_array($request->input('specialties')) ? $request->input('specialties')      : [],
-                    languages           : is_array($request->input('languages')) ? $request->input('languages')          : [],
-                    licenseNumber       : $request->filled('license_number') ? (string) $request->input('license_number'): null,
+                    userId              : $request->filled('user_id') ? (int) $request->input('user_id') : null,
+                    specialties         : is_array($request->input('specialties')) ? $request->input('specialties') : [],
+                    languages           : is_array($request->input('languages')) ? $request->input('languages') : [],
+                    licenseNumber       : $request->filled('license_number') ? (string) $request->input('license_number') : null,
                     acceptingNewPatients: (bool) $request->input('accepting_new_patients', true),
                 );
 

@@ -34,8 +34,8 @@ final class BookableSlotGenerator
         $earliestToday = self::ceilToSlotStart($nowLocal, $settings->slotDurationMinutes);
         $windows       = [];
 
-        for ($cursor = $startDate; $cursor <= $endDate; $cursor = $cursor->modify('+1 day')) {
-            $dayHours = $settings->dayScheduleFor($cursor);
+        for ($cursor                                      = $startDate; $cursor <= $endDate; $cursor = $cursor->modify('+1 day')) {
+            $dayHours                                        = $settings->dayScheduleFor($cursor);
             if ($dayHours === null) {
                 continue;
             }
@@ -73,8 +73,8 @@ final class BookableSlotGenerator
     ): array {
         $generated = $this->generate($settings, $now, $horizonDays);
         if ($generated === []) {
-            $timezone  = new \DateTimeZone($settings->timezone);
-            $nowLocal  = $now->setTimezone($timezone);
+            $timezone = new \DateTimeZone($settings->timezone);
+            $nowLocal = $now->setTimezone($timezone);
 
             return [
                 'date'       => $nowLocal->format('Y-m-d'),
@@ -125,9 +125,9 @@ final class BookableSlotGenerator
             return [];
         }
 
-        $windows           = [];
-        $cursorMinutes     = self::toMinutes($dayStart);
-        $endMinutes        = self::toMinutes($dayEnd);
+        $windows       = [];
+        $cursorMinutes = self::toMinutes($dayStart);
+        $endMinutes    = self::toMinutes($dayEnd);
 
         while ($cursorMinutes + $durationMinutes <= $endMinutes) {
             $start = self::fromMinutes($cursorMinutes);

@@ -12,7 +12,7 @@ use App\Application\Doctor\Command\UpdateDoctorAppointmentSettings;
 use App\Application\Patient\Command\CreatePatient;
 use App\Application\Scheduling\Command\HoldAppointment;
 use App\Domain\Audit\AuditOutcome;
-use App\Models\ApiToken;
+use App\Infrastructure\Auth\JwtTokenIssuer;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -26,13 +26,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $users = [
-            ['name' => 'Dr Alice', 'email' => 'doctor@example.com', 'role' => 'doctor', 'secret' => 'doctor-dev-secret'],
-            ['name' => 'Receptionist Minh', 'email' => 'reception@example.com', 'role' => 'receptionist', 'secret' => 'reception-dev-secret'],
-            ['name' => 'Pharmacist Bob', 'email' => 'pharmacist@example.com', 'role' => 'pharmacist', 'secret' => 'pharmacist-dev-secret'],
-            ['name' => 'Patient Carol', 'email' => 'patient@example.com', 'role' => 'patient', 'secret' => 'patient-dev-secret'],
+            ['name' => 'Dr Alice', 'email' => 'doctor@example.com', 'role' => 'doctor'],
+            ['name' => 'Receptionist Minh', 'email' => 'reception@example.com', 'role' => 'receptionist'],
+            ['name' => 'Pharmacist Bob', 'email' => 'pharmacist@example.com', 'role' => 'pharmacist'],
+            ['name' => 'Patient Carol', 'email' => 'patient@example.com', 'role' => 'patient'],
         ];
 
         $createdUsers = [];
+        $jwtTokens    = [];
+        $issuer       = app(JwtTokenIssuer::class);
 
         foreach ($users as $spec) {
             $user = User::query()->create([
@@ -42,16 +44,12 @@ class DatabaseSeeder extends Seeder
                 'role'     => $spec['role'],
             ]);
 
-            $token = $user->id . '.' . $spec['secret'];
-
-            ApiToken::query()->create([
-                'user_id' => $user->id,
-                'token'   => $token,
-            ]);
+            $jwt = $issuer->issueForUser($user);
 
             $createdUsers[$spec['role']] = $user;
+            $jwtTokens[$spec['role']]    = $jwt;
 
-            $this->command?->info(sprintf('%s bearer token: %s', $spec['role'], $token));
+            $this->command?->info(sprintf('%s JWT: %s', $spec['role'], $jwt));
         }
 
         $createDoctor   = app(CreateDoctor::class);
@@ -147,9 +145,9 @@ class DatabaseSeeder extends Seeder
 
         $this->printApiGuide(
             tokens: [
-                'patient'      => $createdUsers['patient']->id . '.patient-dev-secret',
-                'doctor'       => $createdUsers['doctor']->id . '.doctor-dev-secret',
-                'receptionist' => $createdUsers['receptionist']->id . '.reception-dev-secret',
+                'patient'      => $jwtTokens['patient'],
+                'doctor'       => $jwtTokens['doctor'],
+                'receptionist' => $jwtTokens['receptionist'],
             ],
             doctors: [
                 'dr_alice'      => $drAlice,

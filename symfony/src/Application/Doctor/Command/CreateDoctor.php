@@ -35,13 +35,13 @@ final readonly class CreateDoctor
         ?int $userId = null,
     ): array {
         $doctor = new Doctor(
-            id                   : new PractitionerId($doctorId),
-            name                 : $name,
-            specialties          : Doctor::normalizeStringList($specialties),
-            languages            : Doctor::normalizeStringList($languages),
-            licenseNumber        : $licenseNumber,
-            acceptingNewPatients : $acceptingNewPatients,
-            userId               : $userId,
+            id                  : new PractitionerId($doctorId),
+            name                : $name,
+            specialties         : Doctor::normalizeStringList($specialties),
+            languages           : Doctor::normalizeStringList($languages),
+            licenseNumber       : $licenseNumber,
+            acceptingNewPatients: $acceptingNewPatients,
+            userId              : $userId,
         );
         $this->doctors->save($doctor);
         $this->appointmentSettings->ensureDefaults($doctor->id);

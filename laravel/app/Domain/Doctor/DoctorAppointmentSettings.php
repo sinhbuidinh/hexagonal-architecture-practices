@@ -52,7 +52,7 @@ final readonly class DoctorAppointmentSettings
                 'sat' => null,
                 'sun' => null,
             ],
-            timezone: self::DEFAULT_TIMEZONE,
+            timezone           : self::DEFAULT_TIMEZONE,
         );
     }
 

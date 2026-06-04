@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http\Middleware;
 
-use App\Infrastructure\Auth\BearerTokenAuthenticator;
-use App\Infrastructure\Auth\InvalidBearerTokenException;
+use App\Infrastructure\Auth\InvalidJwtException;
+use App\Infrastructure\Auth\JwtTokenAuthenticator;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class AuthenticateBearerToken
+final class AuthenticateJwt
 {
     public const REQUEST_ATTRIBUTE = 'authenticated_user';
 
-    public function __construct(private readonly BearerTokenAuthenticator $authenticator)
+    public function __construct(private readonly JwtTokenAuthenticator $authenticator)
     {
     }
 
@@ -22,17 +22,17 @@ final class AuthenticateBearerToken
     {
         $header = $request->header('Authorization', '');
         if (!str_starts_with($header, 'Bearer ')) {
-            return response()->json(['message' => 'Bearer token required.'], 401);
+            return response()->json(['message' => 'Bearer JWT required.'], 401);
         }
 
         $token = trim(substr($header, 7));
         if ($token === '') {
-            return response()->json(['message' => 'Bearer token required.'], 401);
+            return response()->json(['message' => 'Bearer JWT required.'], 401);
         }
 
         try {
             $user = $this->authenticator->authenticate($token);
-        } catch (InvalidBearerTokenException $e) {
+        } catch (InvalidJwtException $e) {
             return response()->json(['message' => $e->getMessage()], 401);
         }
 

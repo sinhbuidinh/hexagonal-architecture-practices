@@ -15,7 +15,7 @@ final class MaterializeBookableSlotsCommand extends Command
 
     public function handle(MaterializeBookableSlotsForAllDoctors $materialize): int
     {
-        $daysOption = $this->option('days');
+        $daysOption  = $this->option('days');
         $horizonDays = is_string($daysOption) && $daysOption !== ''
             ? (int) $daysOption
             : null;

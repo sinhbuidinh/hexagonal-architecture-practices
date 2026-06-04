@@ -25,13 +25,13 @@ final class InMemoryDoctorAdapter implements DoctorCommandPort, DoctorQueryPort
         bool $acceptingNewPatients = true,
     ): Doctor {
         $doctor = new Doctor(
-            id                   : new PractitionerId($this->nextId),
-            name                 : $name,
-            specialties          : Doctor::normalizeStringList($specialties),
-            languages            : Doctor::normalizeStringList($languages),
-            licenseNumber        : $licenseNumber,
-            acceptingNewPatients : $acceptingNewPatients,
-            userId               : $userId,
+            id                  : new PractitionerId($this->nextId),
+            name                : $name,
+            specialties         : Doctor::normalizeStringList($specialties),
+            languages           : Doctor::normalizeStringList($languages),
+            licenseNumber       : $licenseNumber,
+            acceptingNewPatients: $acceptingNewPatients,
+            userId              : $userId,
         );
         $this->store[$doctor->id->value] = $doctor;
         ++$this->nextId;

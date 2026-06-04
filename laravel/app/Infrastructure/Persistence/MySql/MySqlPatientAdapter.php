@@ -30,12 +30,12 @@ final class MySqlPatientAdapter implements PatientCommandPort, PatientQueryPort
         ]);
 
         return new Patient(
-            id                : new PatientId((string) $id),
-            name              : $name,
-            preferredLanguage : $preferredLanguage,
-            dateOfBirth       : $dateOfBirth,
-            phone             : $phone,
-            userId            : $userId,
+            id               : new PatientId((string) $id),
+            name             : $name,
+            preferredLanguage: $preferredLanguage,
+            dateOfBirth      : $dateOfBirth,
+            phone            : $phone,
+            userId           : $userId,
         );
     }
 
@@ -63,12 +63,12 @@ final class MySqlPatientAdapter implements PatientCommandPort, PatientQueryPort
         }
 
         return new Patient(
-            id                : new PatientId((string) $row->id),
-            name              : $row->name,
-            preferredLanguage : $row->preferred_language,
-            dateOfBirth       : $row->date_of_birth !== null ? (string) $row->date_of_birth : null,
-            phone             : $row->phone,
-            userId            : $row->user_id !== null ? (int) $row->user_id : null,
+            id               : new PatientId((string) $row->id),
+            name             : $row->name,
+            preferredLanguage: $row->preferred_language,
+            dateOfBirth      : $row->date_of_birth !== null ? (string) $row->date_of_birth : null,
+            phone            : $row->phone,
+            userId           : $row->user_id !== null ? (int) $row->user_id : null,
         );
     }
 }

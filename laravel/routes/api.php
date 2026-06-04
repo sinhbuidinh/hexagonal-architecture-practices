@@ -9,7 +9,7 @@ use App\Infrastructure\Http\PatientController;
 use App\Infrastructure\Http\PrescriptionController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth.bearer')->group(function (): void {
+Route::middleware('auth.jwt')->group(function (): void {
     Route::get('/audit-logs', [AuditLogController::class, 'index']);
 
     Route::post('/doctors', [DoctorController::class, 'create']);

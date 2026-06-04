@@ -37,16 +37,17 @@ use HexagonPractise\Application\Scheduling\Command\MaterializeBookableSlots;
 use HexagonPractise\Application\Scheduling\Command\MaterializeBookableSlotsForAllDoctors;
 use HexagonPractise\Application\Scheduling\Command\PublishBookableSlots;
 use HexagonPractise\Application\Scheduling\Command\SetPractitionerAvailability;
+use HexagonPractise\Domain\Scheduling\BookableSlotGenerator;
 use HexagonPractise\Infrastructure\Clock\SystemClock;
 use HexagonPractise\Infrastructure\Event\DomainExceptionHandler;
 use HexagonPractise\Infrastructure\Event\Listener\AppointmentNotFoundExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\BookableSlotNotFoundExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\BookableSlotUnavailableExceptionListener;
-use HexagonPractise\Infrastructure\Event\Listener\OverlappingBookableWindowExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\ConcurrentUpdateExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\DoctorAppointmentSettingsNotFoundExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\DoctorNotFoundExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\NoSlotsAvailableExceptionListener;
+use HexagonPractise\Infrastructure\Event\Listener\OverlappingBookableWindowExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\PatientNotFoundExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\PrescriptionNotFoundExceptionListener;
 use HexagonPractise\Infrastructure\Event\Listener\RecordAuditLogListener;
@@ -65,7 +66,6 @@ use HexagonPractise\Infrastructure\Persistence\Redis\RedisClientFactory;
 use HexagonPractise\Infrastructure\Persistence\Redis\RedisExpirationQueueAdapter;
 use HexagonPractise\Infrastructure\Persistence\Redis\RedisPrescriptionAdapter;
 use HexagonPractise\Infrastructure\Persistence\Redis\RedisSchedulingAdapter;
-use HexagonPractise\Domain\Scheduling\BookableSlotGenerator;
 use HexagonPractise\Infrastructure\Scheduling\ClinicLunchBreakFromConfig;
 use HexagonPractise\Infrastructure\Scheduling\FixedBookableSlotHorizon;
 
@@ -104,12 +104,12 @@ final class Container
 
     public static function fromConfig(array $config, bool $useInMemory = false): self
     {
-        $doctors              = new InMemoryDoctorAdapter();
-        $patients             = new InMemoryPatientAdapter();
-        $auditLog             = new InMemoryAuditLogAdapter();
-        $appointmentSettings  = new InMemoryDoctorAppointmentSettingsAdapter();
-        $bookableSlots        = new InMemoryBookableSlotAdapter();
-        $horizonDays          = (int) ($config['bookable_slot_horizon_days'] ?? 15);
+        $doctors               = new InMemoryDoctorAdapter();
+        $patients              = new InMemoryPatientAdapter();
+        $auditLog              = new InMemoryAuditLogAdapter();
+        $appointmentSettings   = new InMemoryDoctorAppointmentSettingsAdapter();
+        $bookableSlots         = new InMemoryBookableSlotAdapter();
+        $horizonDays           = (int) ($config['bookable_slot_horizon_days'] ?? 15);
         $bookableSlotGenerator = new BookableSlotGenerator(
             ClinicLunchBreakFromConfig::fromConfigArray($config)->lunchBreak(),
         );
@@ -119,23 +119,23 @@ final class Container
             $prescriptions = new InMemoryPrescriptionAdapter();
 
             return new self(
-                bookableSlotCommands     : $bookableSlots,
-                bookableSlotQueries      : $bookableSlots,
-                schedulingCommands       : $scheduling,
-                schedulingQueries        : $scheduling,
-                expirationQueue          : new InMemoryExpirationQueueAdapter(),
-                prescriptionCommands     : $prescriptions,
-                prescriptionQueries      : $prescriptions,
-                doctorCommands           : $doctors,
-                doctorQueries            : $doctors,
+                bookableSlotCommands       : $bookableSlots,
+                bookableSlotQueries        : $bookableSlots,
+                schedulingCommands         : $scheduling,
+                schedulingQueries          : $scheduling,
+                expirationQueue            : new InMemoryExpirationQueueAdapter(),
+                prescriptionCommands       : $prescriptions,
+                prescriptionQueries        : $prescriptions,
+                doctorCommands             : $doctors,
+                doctorQueries              : $doctors,
                 appointmentSettingsCommands: $appointmentSettings,
                 appointmentSettingsQueries : $appointmentSettings,
-                patientCommands          : $patients,
-                patientQueries           : $patients,
-                auditLog                 : $auditLog,
-                clock                    : new SystemClock(),
-                horizon                  : new FixedBookableSlotHorizon($horizonDays),
-                bookableSlotGenerator    : $bookableSlotGenerator,
+                patientCommands            : $patients,
+                patientQueries             : $patients,
+                auditLog                   : $auditLog,
+                clock                      : new SystemClock(),
+                horizon                    : new FixedBookableSlotHorizon($horizonDays),
+                bookableSlotGenerator      : $bookableSlotGenerator,
             );
         }
 
@@ -151,11 +151,11 @@ final class Container
         );
 
         return new self(
-            bookableSlotCommands     : $bookableSlots,
-            bookableSlotQueries      : $bookableSlots,
-            schedulingCommands       : $scheduling,
-            schedulingQueries        : $scheduling,
-            expirationQueue          : new RedisExpirationQueueAdapter(
+            bookableSlotCommands: $bookableSlots,
+            bookableSlotQueries : $bookableSlots,
+            schedulingCommands  : $scheduling,
+            schedulingQueries   : $scheduling,
+            expirationQueue     : new RedisExpirationQueueAdapter(
                 redis           : $redis,
                 zsetKey         : $config['expiration_zset_key'],
                 payloadKeyPrefix: $config['expiration_payload_prefix'],
@@ -216,11 +216,11 @@ final class Container
         );
         $this->holdAppointment = new HoldAppointment(
             scheduling          : $schedulingCommands,
-            bookableSlotCommands  : $bookableSlotCommands,
-            bookableSlotQueries   : $bookableSlotQueries,
-            expirationQueue       : $expirationQueue,
-            doctors               : $doctorQueries,
-            patients              : $patientQueries,
+            bookableSlotCommands: $bookableSlotCommands,
+            bookableSlotQueries : $bookableSlotQueries,
+            expirationQueue     : $expirationQueue,
+            doctors             : $doctorQueries,
+            patients            : $patientQueries,
         );
         $this->confirmAppointment = new ConfirmAppointment(
             $schedulingCommands,
@@ -239,29 +239,29 @@ final class Container
         $this->updatePrescription = new UpdatePrescription($prescriptionCommands, $prescriptionQueries);
 
         $this->materializeBookableSlots = new MaterializeBookableSlots(
-            bookableSlots       : $bookableSlotCommands,
-            appointmentSettings : $appointmentSettingsQueries,
-            doctors             : $doctorQueries,
-            horizon             : $horizon,
-            clock               : $clock,
-            generator           : $bookableSlotGenerator,
+            bookableSlots      : $bookableSlotCommands,
+            appointmentSettings: $appointmentSettingsQueries,
+            doctors            : $doctorQueries,
+            horizon            : $horizon,
+            clock              : $clock,
+            generator          : $bookableSlotGenerator,
         );
         $this->materializeBookableSlotsForAllDoctors = new MaterializeBookableSlotsForAllDoctors(
-            doctors                   : $doctorQueries,
-            appointmentSettings       : $appointmentSettingsQueries,
+            doctors                 : $doctorQueries,
+            appointmentSettings     : $appointmentSettingsQueries,
             materializeBookableSlots: $this->materializeBookableSlots,
         );
         $this->createDoctor = new CreateDoctor(
-            doctors             : $doctorCommands,
-            appointmentSettings : $appointmentSettingsCommands,
+            doctors            : $doctorCommands,
+            appointmentSettings: $appointmentSettingsCommands,
         );
         $this->getDoctorAppointmentSettings = new GetDoctorAppointmentSettings(
             settings: $appointmentSettingsQueries,
             doctors : $doctorQueries,
         );
         $this->updateDoctorAppointmentSettings = new UpdateDoctorAppointmentSettings(
-            settingsCommands      : $appointmentSettingsCommands,
-            doctors               : $doctorQueries,
+            settingsCommands        : $appointmentSettingsCommands,
+            doctors                 : $doctorQueries,
             materializeBookableSlots: $this->materializeBookableSlots,
         );
         $this->createPatient = new CreatePatient($patientCommands);

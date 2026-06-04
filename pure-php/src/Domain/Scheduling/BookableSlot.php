@@ -11,8 +11,8 @@ use HexagonPractise\Domain\Shared\PractitionerId;
 final readonly class BookableSlot
 {
     public const STATUS_AVAILABLE = 'available';
-    public const STATUS_HELD        = 'held';
-    public const STATUS_CONFIRMED   = 'confirmed';
+    public const STATUS_HELD      = 'held';
+    public const STATUS_CONFIRMED = 'confirmed';
 
     public function __construct(
         public BookableSlotId $id,
@@ -87,8 +87,8 @@ final readonly class BookableSlot
                 static fn (array $a, array $b): int => $a['start_time'] <=> $b['start_time'],
             );
 
-            $count = count($dayWindows);
-            for ($i = 1; $i < $count; ++$i) {
+            $count    = count($dayWindows);
+            for ($i    = 1; $i < $count; ++$i) {
                 $previous = $dayWindows[$i - 1];
                 $current  = $dayWindows[$i];
                 if ($previous['end_time'] > $current['start_time']) {
@@ -144,4 +144,3 @@ final readonly class BookableSlot
         return ['min' => $dates[0], 'max' => $dates[array_key_last($dates)]];
     }
 }
-

@@ -24,12 +24,12 @@ final class InMemoryPatientAdapter implements PatientCommandPort, PatientQueryPo
         ?string $phone = null,
     ): Patient {
         $patient = new Patient(
-            id                : new PatientId((string) $this->nextId),
-            name              : $name,
-            preferredLanguage : $preferredLanguage,
-            dateOfBirth       : $dateOfBirth,
-            phone             : $phone,
-            userId            : $userId,
+            id               : new PatientId((string) $this->nextId),
+            name             : $name,
+            preferredLanguage: $preferredLanguage,
+            dateOfBirth      : $dateOfBirth,
+            phone            : $phone,
+            userId           : $userId,
         );
         $this->store[$patient->id->value] = $patient;
         ++$this->nextId;

@@ -39,12 +39,12 @@ final readonly class CreateDoctor
         }
 
         $doctor = $this->doctors->create(
-            name                 : $name,
-            userId               : $userId,
-            specialties          : $specialties,
-            languages            : $languages,
-            licenseNumber        : $licenseNumber,
-            acceptingNewPatients : $acceptingNewPatients,
+            name                : $name,
+            userId              : $userId,
+            specialties         : $specialties,
+            languages           : $languages,
+            licenseNumber       : $licenseNumber,
+            acceptingNewPatients: $acceptingNewPatients,
         );
 
         $this->appointmentSettings->ensureDefaults($doctor->id);

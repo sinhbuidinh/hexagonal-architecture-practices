@@ -32,13 +32,13 @@ final class MySqlDoctorAdapter implements DoctorCommandPort, DoctorQueryPort
         ]);
 
         return new Doctor(
-            id                   : new PractitionerId($id),
-            name                 : $name,
-            specialties          : Doctor::normalizeStringList($specialties),
-            languages            : Doctor::normalizeStringList($languages),
-            licenseNumber        : $licenseNumber,
-            acceptingNewPatients : $acceptingNewPatients,
-            userId               : $userId,
+            id                  : new PractitionerId($id),
+            name                : $name,
+            specialties         : Doctor::normalizeStringList($specialties),
+            languages           : Doctor::normalizeStringList($languages),
+            licenseNumber       : $licenseNumber,
+            acceptingNewPatients: $acceptingNewPatients,
+            userId              : $userId,
         );
     }
 
@@ -81,13 +81,13 @@ final class MySqlDoctorAdapter implements DoctorCommandPort, DoctorQueryPort
     private function rowToDoctor(object $row): Doctor
     {
         return new Doctor(
-            id                   : new PractitionerId((int) $row->id),
-            name                 : $row->name,
-            specialties          : $this->decodeStringList($row->specialties ?? null),
-            languages            : $this->decodeStringList($row->languages ?? null),
-            licenseNumber        : $row->license_number,
-            acceptingNewPatients : (bool) $row->accepting_new_patients,
-            userId               : $row->user_id !== null ? (int) $row->user_id : null,
+            id                  : new PractitionerId((int) $row->id),
+            name                : $row->name,
+            specialties         : $this->decodeStringList($row->specialties ?? null),
+            languages           : $this->decodeStringList($row->languages ?? null),
+            licenseNumber       : $row->license_number,
+            acceptingNewPatients: (bool) $row->accepting_new_patients,
+            userId              : $row->user_id !== null ? (int) $row->user_id : null,
         );
     }
 

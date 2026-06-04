@@ -39,7 +39,7 @@ final class BookableSlotGeneratorTest extends TestCase
 
     public function testGenerateExcludesGlobalLunchBreak(): void
     {
-        $allDay = static fn (): DailyWorkHours => new DailyWorkHours('09:00', '15:30');
+        $allDay   = static fn (): DailyWorkHours => new DailyWorkHours('09:00', '15:30');
         $settings = new DoctorAppointmentSettings(
             practitionerId     : new PractitionerId(1),
             slotDurationMinutes: 60,
@@ -52,7 +52,7 @@ final class BookableSlotGeneratorTest extends TestCase
                 'sat' => null,
                 'sun' => null,
             ],
-            timezone: 'UTC',
+            timezone           : 'UTC',
         );
 
         $generator = new BookableSlotGenerator(new ClinicLunchBreak('12:00', '13:30'));

@@ -22,13 +22,13 @@ final class PatientController
         $audit = AuditHttp::merge($request);
 
         $payload = $this->httpActionRunner->run(
-            action       : function () use ($request): array {
+            action: function () use ($request): array {
                 $data = $this->createPatient->execute(
-                    name              : (string) $request->input('name', ''),
-                    userId            : $request->filled('user_id') ? (int) $request->input('user_id') : null,
-                    preferredLanguage : $request->filled('preferred_language') ? (string) $request->input('preferred_language') : null,
-                    dateOfBirth       : $request->filled('date_of_birth') ? (string) $request->input('date_of_birth') : null,
-                    phone             : $request->filled('phone') ? (string) $request->input('phone') : null,
+                    name             : (string) $request->input('name', ''),
+                    userId           : $request->filled('user_id') ? (int) $request->input('user_id') : null,
+                    preferredLanguage: $request->filled('preferred_language') ? (string) $request->input('preferred_language') : null,
+                    dateOfBirth      : $request->filled('date_of_birth') ? (string) $request->input('date_of_birth') : null,
+                    phone            : $request->filled('phone') ? (string) $request->input('phone') : null,
                 );
 
                 return ['data' => $data];

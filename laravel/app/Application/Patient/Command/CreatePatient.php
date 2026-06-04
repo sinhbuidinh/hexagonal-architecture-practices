@@ -30,11 +30,11 @@ final readonly class CreatePatient
         }
 
         $patient = $this->patients->create(
-            name              : $name,
-            userId            : $userId,
-            preferredLanguage : $preferredLanguage,
-            dateOfBirth       : $dateOfBirth,
-            phone             : $phone,
+            name             : $name,
+            userId           : $userId,
+            preferredLanguage: $preferredLanguage,
+            dateOfBirth      : $dateOfBirth,
+            phone            : $phone,
         );
 
         return $patient->toArray();

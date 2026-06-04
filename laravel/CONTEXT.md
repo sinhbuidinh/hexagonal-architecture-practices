@@ -20,8 +20,9 @@ composer install && php artisan serve
 | `app/Providers/AuditServiceProvider.php` | `AuditLogPort` → MySql |
 | `app/Providers/CatalogServiceProvider.php` | doctor/patient command/query ports → MySql |
 | `app/Providers/PrescriptionServiceProvider.php` | `PrescriptionCommandPort` / `PrescriptionQueryPort` → MySql |
-| `app/Providers/AuthServiceProvider.php` | Bearer token auth |
-| `routes/api.php` | All HTTP routes (require `Authorization: Bearer {userId}.{secret}`) |
+| `app/Providers/AuthServiceProvider.php` | JWT auth (`lcobucci/jwt`, HS256) |
+| `config/jwt.php` | `JWT_SECRET` / `JWT_ISSUER` / `JWT_TTL` |
+| `routes/api.php` | All HTTP routes (require `Authorization: Bearer {jwt}`) |
 | `bootstrap/app.php` | Registers `routes/api.php` |
 
 ## Hexagon code

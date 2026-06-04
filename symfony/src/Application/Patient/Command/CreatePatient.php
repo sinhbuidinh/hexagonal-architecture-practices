@@ -26,12 +26,12 @@ final readonly class CreatePatient
         ?int $userId = null,
     ): array {
         $patient = new Patient(
-            id                : new PatientId($patientId),
-            name              : $name,
-            preferredLanguage : $preferredLanguage,
-            dateOfBirth       : $dateOfBirth,
-            phone             : $phone,
-            userId            : $userId,
+            id               : new PatientId($patientId),
+            name             : $name,
+            preferredLanguage: $preferredLanguage,
+            dateOfBirth      : $dateOfBirth,
+            phone            : $phone,
+            userId           : $userId,
         );
         $this->patients->save($patient);
 
