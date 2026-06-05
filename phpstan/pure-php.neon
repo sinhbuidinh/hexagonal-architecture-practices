@@ -6,4 +6,6 @@ parameters:
     level: 0
     paths:
         - ../pure-php/src
+    bootstrapFiles:
+        - ../pure-php/vendor/autoload.php
     treatPhpDocTypesAsCertain: false

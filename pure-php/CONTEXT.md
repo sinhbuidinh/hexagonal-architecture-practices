@@ -6,9 +6,12 @@
 
 ```bash
 composer install && composer test
-php bin/console --in-memory <command>   # no Redis
-USE_IN_MEMORY=1 composer serve          # HTTP :8080, no /api prefix
+php bin/console <command>               # hybrid: MySQL catalog + Redis scheduling
+php bin/console --in-memory <command>   # all in-memory (no MySQL/Redis)
+USE_IN_MEMORY=1 composer serve          # HTTP :8080 in-memory; else hybrid
 ```
+
+Hybrid needs MySQL (Laravel hexagon migration) + Redis. Env: `DATABASE_URL`, `REDIS_DSN`.
 
 ## Entry points
 

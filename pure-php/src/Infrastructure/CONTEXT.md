@@ -18,9 +18,13 @@ PUT prescription: body `actor`, `expected_version`, fields. **409** = `Concurren
 
 ### InMemory (`Persistence/InMemory/`)
 
-Default for tests & `--in-memory`. No true parallelism; still enforces version checks.
+Tests & `--in-memory`. No true parallelism; still enforces version checks.
 
-### Redis (`Persistence/Redis/`)
+### MySQL catalog (`Persistence/MySql/`) — default production
+
+Doctrine DBAL adapters for doctors, patients, bookable slots, appointment settings, audit logs. DSN: `config/app.php` `database_dsn` (`DATABASE_URL` / `DATABASE_DSN`). Schema: Laravel migration `2026_06_04_000003_create_hexagon_tables.php`. Patient ids must be **numeric** strings when using MySQL.
+
+### Redis scheduling (`Persistence/Redis/`) — hybrid with MySQL
 
 | Adapter | Lua scripts |
 |---------|-------------|
@@ -29,6 +33,8 @@ Default for tests & `--in-memory`. No true parallelism; still enforces version c
 | `RedisPrescriptionAdapter` | `update_prescription` (CAS on version) |
 
 Keys: `config/app.php` prefixes (`scheduling:slots:`, `scheduling:appointment:`, `prescription:`).
+
+**Default wiring** (`Container::fromConfig` without `--in-memory`): MySQL catalog + Redis scheduling/prescriptions/expiration.
 
 ## Clock
 

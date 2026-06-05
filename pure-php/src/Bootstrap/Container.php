@@ -62,6 +62,12 @@ use HexagonPractise\Infrastructure\Persistence\InMemory\InMemoryExpirationQueueA
 use HexagonPractise\Infrastructure\Persistence\InMemory\InMemoryPatientAdapter;
 use HexagonPractise\Infrastructure\Persistence\InMemory\InMemoryPrescriptionAdapter;
 use HexagonPractise\Infrastructure\Persistence\InMemory\InMemorySchedulingAdapter;
+use HexagonPractise\Infrastructure\Persistence\MySql\DatabaseConnectionFactory;
+use HexagonPractise\Infrastructure\Persistence\MySql\MySqlAuditLogAdapter;
+use HexagonPractise\Infrastructure\Persistence\MySql\MySqlBookableSlotAdapter;
+use HexagonPractise\Infrastructure\Persistence\MySql\MySqlDoctorAdapter;
+use HexagonPractise\Infrastructure\Persistence\MySql\MySqlDoctorAppointmentSettingsAdapter;
+use HexagonPractise\Infrastructure\Persistence\MySql\MySqlPatientAdapter;
 use HexagonPractise\Infrastructure\Persistence\Redis\RedisClientFactory;
 use HexagonPractise\Infrastructure\Persistence\Redis\RedisExpirationQueueAdapter;
 use HexagonPractise\Infrastructure\Persistence\Redis\RedisPrescriptionAdapter;
@@ -104,19 +110,19 @@ final class Container
 
     public static function fromConfig(array $config, bool $useInMemory = false): self
     {
-        $doctors               = new InMemoryDoctorAdapter();
-        $patients              = new InMemoryPatientAdapter();
-        $auditLog              = new InMemoryAuditLogAdapter();
-        $appointmentSettings   = new InMemoryDoctorAppointmentSettingsAdapter();
-        $bookableSlots         = new InMemoryBookableSlotAdapter();
         $horizonDays           = (int) ($config['bookable_slot_horizon_days'] ?? 15);
         $bookableSlotGenerator = new BookableSlotGenerator(
             ClinicLunchBreakFromConfig::fromConfigArray($config)->lunchBreak(),
         );
 
         if ($useInMemory) {
-            $scheduling    = new InMemorySchedulingAdapter();
-            $prescriptions = new InMemoryPrescriptionAdapter();
+            $doctors             = new InMemoryDoctorAdapter();
+            $patients            = new InMemoryPatientAdapter();
+            $auditLog            = new InMemoryAuditLogAdapter();
+            $appointmentSettings = new InMemoryDoctorAppointmentSettingsAdapter();
+            $bookableSlots       = new InMemoryBookableSlotAdapter();
+            $scheduling          = new InMemorySchedulingAdapter();
+            $prescriptions       = new InMemoryPrescriptionAdapter();
 
             return new self(
                 bookableSlotCommands       : $bookableSlots,
@@ -138,6 +144,13 @@ final class Container
                 bookableSlotGenerator      : $bookableSlotGenerator,
             );
         }
+
+        $database            = DatabaseConnectionFactory::fromDsn($config['database_dsn']);
+        $doctors             = new MySqlDoctorAdapter($database);
+        $patients            = new MySqlPatientAdapter($database);
+        $auditLog            = new MySqlAuditLogAdapter($database);
+        $appointmentSettings = new MySqlDoctorAppointmentSettingsAdapter($database);
+        $bookableSlots       = new MySqlBookableSlotAdapter($database);
 
         $redis      = RedisClientFactory::fromDsn($config['redis_dsn']);
         $scheduling = new RedisSchedulingAdapter(

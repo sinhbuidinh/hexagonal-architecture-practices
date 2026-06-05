@@ -15,13 +15,14 @@ Use cases depend on **Domain** + **Port** interfaces only. **CQRS**: writes use 
 | `ExpirationQueuePort` | InMemory, Redis ZSET | Schedule/poll expiring items |
 | `PrescriptionCommandPort` | InMemory, Redis+Lua | save, `updateIfVersionMatches` |
 | `PrescriptionQueryPort` | same adapter | find by id |
-| `DoctorCommandPort` / `DoctorQueryPort` | InMemory | register + list doctors |
-| `DoctorAppointmentSettingsCommandPort` / `DoctorAppointmentSettingsQueryPort` | InMemory, MySql (Laravel) | weekly hours, slot duration, timezone |
+| `DoctorCommandPort` / `DoctorQueryPort` | InMemory, MySql | register + list doctors |
+| `DoctorAppointmentSettingsCommandPort` / `DoctorAppointmentSettingsQueryPort` | InMemory, MySql | weekly hours, slot duration, timezone |
 | `BookableSlotHorizonPort` | Fixed, config (Laravel) | rolling window days (default 15) |
 | `ClinicLunchBreakPort` | config (`CLINIC_LUNCH_BREAK_*`) | global lunch gap carved out of generated slots (default 12:00–13:30) |
-| `PatientCommandPort` / `PatientQueryPort` | InMemory | register patients |
+| `PatientCommandPort` / `PatientQueryPort` | InMemory, MySql | register patients |
 | `ClockPort` | System, Frozen | Injectable time (tests) |
-| `AuditLogPort` | InMemory | append + listRecent |
+| `BookableSlotCommandPort` / `BookableSlotQueryPort` | InMemory, MySql | publish/list/hold status |
+| `AuditLogPort` | InMemory, MySql | append + listRecent |
 
 ## Doctor / Patient / Booking
 

@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'database_dsn' => getenv('DATABASE_URL')
+        ?: getenv('DATABASE_DSN')
+        ?: 'mysql://root@127.0.0.1:3306/hexagon_practise',
     'redis_dsn' => getenv('REDIS_DSN') ?: 'redis://127.0.0.1:6379',
     'slots_key_prefix' => 'scheduling:slots:',
     'appointment_key_prefix' => 'scheduling:appointment:',

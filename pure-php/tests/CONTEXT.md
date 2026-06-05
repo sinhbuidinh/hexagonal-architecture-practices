@@ -18,5 +18,6 @@ PHPUnit; bootstrap `vendor/autoload.php`.
 | File | Covers |
 |------|--------|
 | `Integration/RedisSchedulingAdapterTest.php` | Lua hold/cancel; **skipped** if Redis down |
+| `Integration/MySqlCatalogAdapterTest.php` | Doctor/patient MySQL round-trip; **skipped** if MySQL down |
 
 Run: `composer test` from `pure-php/`.

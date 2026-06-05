@@ -113,7 +113,10 @@ Prescriptions (optimistic locking — pass expected_version from GET):
   prescription:update <id> '<json>'
 
 Flags:
-  --in-memory   Use in-memory adapters (no Redis)
+  --in-memory   All in-memory adapters (no MySQL/Redis)
+
+Default: MySQL catalog (doctors, patients, slots, audit) + Redis scheduling/prescriptions.
+Env: DATABASE_URL, REDIS_DSN
 
 HELP;
 }
